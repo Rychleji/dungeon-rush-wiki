@@ -1,8 +1,8 @@
 /* =========================================================
- * RELIC / GEAR CALCULATOR
+ * SHARED DUNGEON RUSH CALCULATORS
  * ========================================================= */
 
-#relic-calculator {
+.dr-calculator {
     width: 100%;
 }
 
@@ -11,7 +11,7 @@
  * Main container
  * --------------------------------------------------------- */
 
-#relic-calculator .gear-calc {
+.dr-calculator .gear-calc {
     width: 100%;
     max-width: 1000px;
     margin: 1em auto;
@@ -23,21 +23,21 @@
  * Table
  * --------------------------------------------------------- */
 
-#relic-calculator .gear-calc-table {
+.dr-calculator .gear-calc-table {
     width: 100%;
     min-width: 760px;
     border-collapse: collapse;
     table-layout: fixed;
 }
 
-#relic-calculator .gear-calc-table th,
-#relic-calculator .gear-calc-table td {
+.dr-calculator .gear-calc-table th,
+.dr-calculator .gear-calc-table td {
     padding: 10px;
     border-bottom: 1px solid rgba(128, 128, 128, 0.3);
     vertical-align: middle;
 }
 
-#relic-calculator .gear-calc-table thead th {
+.dr-calculator .gear-calc-table thead th {
     font-weight: bold;
     text-align: left;
 }
@@ -45,35 +45,35 @@
 
 /* Column widths */
 
-#relic-calculator .gear-calc-table th:nth-child(1),
-#relic-calculator .gear-calc-table td:nth-child(1) {
+.dr-calculator .gear-calc-equipment th:nth-child(1),
+.dr-calculator .gear-calc-equipment td:nth-child(1) {
     width: 15%;
 }
 
-#relic-calculator .gear-calc-table th:nth-child(2),
-#relic-calculator .gear-calc-table td:nth-child(2) {
+.dr-calculator .gear-calc-equipment th:nth-child(2),
+.dr-calculator .gear-calc-equipment td:nth-child(2) {
     width: 16%;
 }
 
-#relic-calculator .gear-calc-table th:nth-child(3),
-#relic-calculator .gear-calc-table td:nth-child(3) {
+.dr-calculator .gear-calc-equipment th:nth-child(3),
+.dr-calculator .gear-calc-equipment td:nth-child(3) {
     width: 22%;
 }
 
-#relic-calculator .gear-calc-table th:nth-child(4),
-#relic-calculator .gear-calc-table td:nth-child(4) {
+.dr-calculator .gear-calc-equipment th:nth-child(4),
+.dr-calculator .gear-calc-equipment td:nth-child(4) {
     width: 21%;
 }
 
-#relic-calculator .gear-calc-table th:nth-child(5),
-#relic-calculator .gear-calc-table td:nth-child(5) {
+.dr-calculator .gear-calc-equipment th:nth-child(5),
+.dr-calculator .gear-calc-equipment td:nth-child(5) {
     width: 26%;
 }
 
 
 /* Item names */
 
-#relic-calculator .gear-calc-table tbody th {
+.dr-calculator .gear-calc-table tbody th {
     text-align: left;
     font-weight: bold;
 }
@@ -83,8 +83,8 @@
  * Inputs and comboboxes
  * --------------------------------------------------------- */
 
-#relic-calculator input[type="number"],
-#relic-calculator select {
+.dr-calculator input[type="number"],
+.dr-calculator select {
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
@@ -93,13 +93,14 @@
 
     font: inherit;
     color: inherit;
+    background-color: var(--theme-page-background-color, #fff);
 
     border: 1px solid rgba(128, 128, 128, 0.55);
     border-radius: 4px;
 }
 
-#relic-calculator input[type="number"]:focus,
-#relic-calculator select:focus {
+.dr-calculator input[type="number"]:focus,
+.dr-calculator select:focus {
     outline: 2px solid rgba(128, 128, 128, 0.35);
     outline-offset: 1px;
 }
@@ -107,7 +108,7 @@
 
 /* Weapon type selector sits underneath "Weapon" */
 
-#relic-calculator .gear-calc-weapon-type {
+.dr-calculator .gear-calc-weapon-type {
     width: auto;
     min-width: 90px;
     max-width: 100%;
@@ -122,7 +123,7 @@
  * Calculated item stats
  * --------------------------------------------------------- */
 
-#relic-calculator .gear-calc-stat {
+.dr-calculator .gear-calc-stat {
     text-align: left;
     white-space: nowrap;
     line-height: 1.5;
@@ -133,14 +134,14 @@
  * Total result cards
  * --------------------------------------------------------- */
 
-#relic-calculator .gear-calc-results {
+.dr-calculator .gear-calc-results {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
     margin-top: 20px;
 }
 
-#relic-calculator .gear-calc-result {
+.dr-calculator .gear-calc-result {
     box-sizing: border-box;
     min-height: 115px;
     padding: 16px;
@@ -155,11 +156,11 @@
     justify-content: center;
 }
 
-#relic-calculator .gear-calc-result span {
+.dr-calculator .gear-calc-result > span {
     display: block;
 }
 
-#relic-calculator .gear-calc-result strong {
+.dr-calculator .gear-calc-result > strong {
     display: block;
     margin: 6px 0;
 
@@ -167,7 +168,7 @@
     line-height: 1.2;
 }
 
-#relic-calculator .gear-calc-result small {
+.dr-calculator .gear-calc-result > small {
     display: block;
     margin-top: 4px;
     opacity: 0.75;
@@ -178,7 +179,7 @@
  * Misc
  * --------------------------------------------------------- */
 
-#relic-calculator .gear-calc-na {
+.dr-calculator .gear-calc-na {
     opacity: 0.5;
 }
 
@@ -189,19 +190,125 @@
 
 @media (max-width: 700px) {
 
-    #relic-calculator .gear-calc {
+    .dr-calculator .gear-calc {
         overflow-x: auto;
     }
 
-    #relic-calculator .gear-calc-table {
+    .dr-calculator .gear-calc-table {
         font-size: 0.9em;
     }
 
-    #relic-calculator .gear-calc-results {
+    .dr-calculator .gear-calc-results {
         grid-template-columns: 1fr;
     }
 
-    #relic-calculator .gear-calc-result {
+    .dr-calculator .gear-calc-result {
         min-height: 90px;
     }
+}
+/* Shared controls and layouts for the stat/damage calculator. */
+
+.dr-calculator [hidden] {
+    display: none !important;
+}
+
+.dr-calculator .gear-calc-section {
+    margin-top: 24px;
+}
+
+.dr-calculator .gear-calc-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.dr-calculator .gear-calc-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dr-calculator .gear-calc-fields label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dr-calculator .gear-calc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.dr-calculator button {
+    padding: 8px 12px;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 1px solid rgba(128, 128, 128, 0.55);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dr-calculator button:hover,
+.dr-calculator button[aria-selected="true"] {
+    background: rgba(128, 128, 128, 0.15);
+}
+
+.dr-calculator button[aria-selected="true"] {
+    font-weight: bold;
+}
+
+.dr-calculator button:focus-visible,
+.dr-calculator input[type="checkbox"]:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.dr-calculator .gear-calc-breakdown {
+    margin-top: 8px;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+.dr-calculator .gear-calc-note {
+    display: block;
+    font-size: 0.85em;
+    font-weight: normal;
+    white-space: normal;
+    opacity: 0.75;
+}
+
+.dr-calculator .gear-calc-pets {
+    table-layout: auto;
+    min-width: 640px;
+}
+
+.dr-calculator .gear-calc-pets td:nth-last-child(-n+3),
+.dr-calculator .gear-calc-pets thead th:nth-last-child(-n+3) {
+    text-align: right;
+}
+
+@media (max-width: 700px) {
+    .dr-calculator .gear-calc-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Relic recommendation controls reuse the shared action-row styles. */
+.dr-calculator .gear-calc-distribution {
+    align-items: center;
+}
+
+.dr-calculator .gear-calc-distribution label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dr-calculator .gear-calc-distribution select {
+    width: auto;
+    min-width: 160px;
 }
