@@ -1,0 +1,48 @@
+Pet				lvl		damage		health
+Ember Fist		90		55			165
+Ember Fist		91		55			166
+Magic Wool		86		26			265
+Spark Mouse		90		82			110
+Flame Wing		83		231			309
+Life Horn		86		79			795
+Snow Fang		85		157			472
+Blaze Tail		112		2.97k		3.96k
+Frost Claw		109		967			9.68k
+Storm Eye		113		2.00k		5.99k
+Storm Eye		114		2.01k		6.03k
+Arcane Paw		96		26.10k		34.80k
+Arcane Paw		97		26.33k		35.10k
+Glacier Fist	98		17.70k		53.10k
+Glacier Fist	99		17.85k		53.55k
+Vital Root		97		8.78k		87.75k
+Echo Wing		28		108.00k		144.00k
+Phantom Gaze	28		72.00k		216.00k
+Star Feather	26		34.50k		345.00k
+Star Feather	27		35.25k		352.50k
+
+Pet				lvl		damage		health
+Ember Fist		218		119			357
+Magic Wool		219		59			597
+Spark Mouse		220		180			240
+Flame Wing		202		499			666
+Life Horn		197		162			1.63k
+Snow Fang		195		322			967
+Blaze Tail		228		5.58k		7.44k
+Frost Claw		224		1.83k		18.30k
+Storm Eye		225		3.68k		11.03k
+Arcane Paw		216		53.10k		70.80k
+Arcane Paw		217		53.33k		71.10k
+Glacier Fist	218		35.70k		107.10k
+Vital Root		209		17.18k		171.75k
+Echo Wing		173		434.25k		579.00k
+Phantom Gaze	173		289.50k		868.50k
+Star Feather	174		145.50k		1.46M
+Celestial Mind	95		776.25k		1.04M
+Halo Hare		92		504.00k		1.51M
+Radiant Talon	94		256.50k		2.57M
+
+Pet				lvl		damage		health
+Frost Claw		225		1.84k		18.38k
+Glacier Fist	219		35.85k		107.55k
+Star Feather	175		146.25k		1.46M
+Celestial Mind	96		783.00k		1.04M

@@ -170,10 +170,10 @@ test('character totals add gear and selected pets before additive percentage bon
 
     loadout.petsActive = [true];
     const withMonkey = characterStats(loadout);
-    assert.equal(withMonkey.petDamage, 81);
-    assert.equal(withMonkey.petHealth, 243);
-    near(withMonkey.damage - withoutPets.damage, 109.35);
-    near(withMonkey.health - withoutPets.health, 328.05);
+    assert.equal(withMonkey.petDamage, 72.5);
+    assert.equal(withMonkey.petHealth, 217.5);
+    near(withMonkey.damage - withoutPets.damage, 97.875);
+    near(withMonkey.health - withoutPets.health, 293.625);
 });
 
 test('character calculator uses the same gear, wings, cape, and enchantment rules', () => {
@@ -460,4 +460,80 @@ test('Most power uses weighted stat gains even when existing health and damage a
     assert.equal(result.usedValue, 1);
     near(result.score, result.health / 30 + result.damage / 9);
     near(result.before.score, result.before.health / 30 + result.before.damage / 9);
+});
+
+test('defense multiplier handles either sign and returns the received-damage fraction', () => {
+    const { defenseMultiplier, damageStats } = loadGame().game.formulas;
+    for (const [defense, expected] of [[0, 1], [100, 0.5], [300, 0.25], [900, 0.1], [12.5, 8 / 9]]) {
+        near(defenseMultiplier(defense), expected);
+        near(defenseMultiplier(-defense), expected);
+        near(damageStats({ baseDamage: 1000, rangedDefense: defense }).normalHit, 1000 * expected);
+        near(damageStats({ baseDamage: 1000, weaponType: "melee", meleeDefense: defense }).normalHit, 1000 * expected);
+    }
+    for (const value of [undefined, NaN, Infinity, "invalid", ""]) {
+        assert.equal(defenseMultiplier(value), 1);
+    }
+    near(defenseMultiplier("100"), 0.5);
+});
+
+test('pet growth matches every recorded in-game observation at its displayed precision', () => {
+    const { data, formulas } = loadGame().game;
+    const snapshot = fs.readFileSync(path.join(__dirname, '..', 'sources', 'pets snapshot.txt'), 'utf8');
+    const observedPets = new Set();
+    let observations = 0;
+    for (const line of snapshot.split(/\r?\n/)) {
+        if (!line.trim() || line.startsWith('Pet\t')) continue;
+        const match = line.match(/^(.+?)\s+(\d+)\s+([\d.]+[kM]?)\s+([\d.]+[kM]?)\s*$/);
+        assert.ok(match, 'Unparsed source observation: ' + line);
+        const [, name, level, damage, health] = match;
+        const pet = data.pets.find(pet => pet.name === name);
+        assert.ok(pet, 'Unknown source pet: ' + name);
+        const calculated = formulas.petStats(pet, Number(level));
+        for (const [stat, display] of [[calculated.damage, damage], [calculated.health, health]]) {
+            const unit = display.endsWith('k') ? 10 : display.endsWith('M') ? 10000 : 1;
+            const scale = display.endsWith('k') ? 1000 : display.endsWith('M') ? 1000000 : 1;
+            const rounded = scale === 1 ? Math.floor(stat) : Math.floor((stat + unit / 2) / unit) * unit;
+            near(rounded, parseFloat(display) * scale);
+        }
+        observedPets.add(name);
+        observations++;
+    }
+    assert.equal(observedPets.size, data.pets.length);
+    assert.equal(observations, 43);
+});
+
+test('pet growth preserves fractional stats, has no wings cap, and normalizes levels', () => {
+    const { data, formulas } = loadGame().game;
+    const ember = data.pets[0];
+    assert.equal(formulas.petStats(ember).level, 125);
+    assert.equal(formulas.petStats(ember, 91).damage, 55.5);
+    assert.equal(formulas.petStats(ember, 91).health, 166.5);
+    assert.equal(formulas.petStats(ember, 91.9).level, 91);
+    assert.equal(formulas.petStats(ember, '218').damage, 119);
+    for (const value of [0, -5, '', NaN, Infinity, 'invalid']) {
+        assert.equal(formulas.petStats(ember, value).level, 1);
+        assert.equal(formulas.petStats(ember, value).damage, 10.5);
+    }
+    assert.equal(formulas.petStats(data.pets[7], 225).damage, 1837.5);
+    assert.equal(formulas.petStats(data.pets[15], 96).damage - formulas.petStats(data.pets[15], 95).damage, 6750);
+});
+
+test('character totals use entered pet levels and selection without mutating inputs', () => {
+    const { data, formulas } = loadGame().game;
+    const levels = Array(data.pets.length).fill(1);
+    const active = Array(data.pets.length).fill(false);
+    levels[0] = 91;
+    levels[1] = 219;
+    levels[15] = 96;
+    active[0] = active[1] = true;
+    const loadout = { petLevels: Object.freeze(levels), petsActive: Object.freeze(active), bonuses: { damage: 10, health: 20 } };
+    const originalData = JSON.stringify(data.pets);
+    const result = formulas.characterStats(loadout);
+    assert.equal(result.petDamage, 55.5 + 59.75);
+    assert.equal(result.petHealth, 166.5 + 597.5);
+    assert.equal(result.pets[15].damage, 783000);
+    near(result.damage, (result.gearDamage + 115.25) * 1.15);
+    near(result.health, (result.gearHealth + 764) * 1.25);
+    assert.equal(formulas.characterStats({ petLevels: levels, petsActive: [] }).petDamage, 0);
+    assert.equal(JSON.stringify(data.pets), originalData);
 });

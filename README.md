@@ -16,11 +16,21 @@ For the stat and damage calculator:
 <div id="dungeon-rush-calculator"></div>
 ```
 
-Both may appear on the same page, once each. JavaScript creates every input, dropdown, button, tab, and result. Only these containers belong in article source; do not paste the standalone HTML document into an article.
+For the defense calculator:
+
+```html
+<div id="defense-calculator"></div>
+```
+
+All three may appear on the same page, once each. JavaScript creates every input, dropdown, button, tab, and result. Only these containers belong in article source; do not paste the standalone HTML document into an article.
 
 The stat tab includes gear, wings, cape, enchantments, additional percentage bonuses, and pet selection. The damage tab handles critical/mega hits, defense, block, multi-hit chances, lifesteal, thorns, and optional target HP. Its copy button takes the current stat total damage; other damage inputs remain separately editable.
 
 ## Recommended relic distribution
+
+The relic calculator defaults to Ranged; the adjacent radio buttons switch weapon type. The compact dropdown beside **Tier** sets all six gear tiers and wings together, leaving the cape unchanged. It shows **Mixed** when those tiers differ.
+
+The optimization selector appears before the primary action button. A successful recommendation highlights all eight relic dropdowns with a gold tint for three seconds; another click restarts that interval. The button uses the Fandom `wds-button` class with the wiki's [theme accent and accessible label colors](https://community.fandom.com/wiki/Help:Color#Theming_variables). The highlight blends with the current page background.
 
 In the relic calculator, enter gear and owned relics, choose **Most power**, **Most Damage**, or **Most Health**, then click **Recommended distribution**. Only relic dropdowns change; gear tiers, levels, and weapon type stay unchanged.
 
@@ -54,7 +64,9 @@ Equipment data and pure formulas are available as `window.DungeonRush.data` and 
 | `powerScore(health, damage)` | Combined power, normalized by the shared wings health/damage bases. |
 | `relicValue(level)` | Level-1 relic equivalents; 0 for an empty slot. |
 | `enchantmentBonus(baseValue, level)` | Additional stat from the same square-level bonus used by relics. |
+| `petStats(pet, level)` | Pet level, damage, and health from shared growth coefficients. |
 | `characterStats(loadout)` | Equipment breakdowns, selected pet sums, multipliers, and damage/health/critical totals. |
+| `defenseMultiplier(defense)` | Fraction of damage received: 100 / (100 + absolute defense). Invalid values use 0 defense. |
 | `damageStats(input)` | Individual hit values, roll probabilities, expected damage, and lifesteal/thorns estimates. |
 
 Normal gear tiers are numbered 0 (Common) through 9 (Divine). Cape rarities use lowercase string values from `capeTiers`. The equipment helpers `gearStat`, `wingsStats`, and `capeStats` default an omitted relic level to 0.
@@ -77,21 +89,32 @@ Formulas return unrounded numbers. UI code validates levels and rounds only for 
 - `gear`: an object keyed by shared equipment IDs, plus `wings`. Each supplied slot needs `{ tier, level, relicLevel }`; omitted slots use Common level 1 without enchantments.
 - `cape`: `{ rarity, level, relicLevel }`, defaulting to Common level 1 without enchantments.
 - `bonuses`: numeric percentage values for `damage`, `health`, `ranged`, `melee`, and `crit`.
-- `petsActive`: booleans indexed like `DungeonRush.data.pets`. Omit to include all reference pets; pass `[]` to include none.
+- `petsActive`: booleans indexed like `DungeonRush.data.pets`. Omit to include all pets; pass `[]` to include none.
+- `petLevels`: levels indexed like `DungeonRush.data.pets`; omitted entries use the original default levels.
 
-It returns equipment breakdowns (`gear`, `wings`, `cape`), `gearDamage`, `gearHealth`, `petDamage`, `petHealth`, `damageMultiplier`, `healthMultiplier`, `damage`, `health`, and `criticalDamage`.
+It returns per-pet stats (`pets`, including unselected pets), equipment breakdowns (`gear`, `wings`, `cape`), `gearDamage`, `gearHealth`, `petDamage`, `petHealth`, `damageMultiplier`, `healthMultiplier`, `damage`, `health`, and `criticalDamage`.
 
 `damageStats(input)` accepts `weaponType`, `baseDamage`, `criticalChance`, `megaChance`, `criticalDamage`, `tripleChance`, `doubleChance`, `knockbackChance`, `lifesteal`, `meleeDefense`, `rangedDefense`, `criticalDefense`, `blockChance`, `thorns`, and `targetHealth`. Numeric values default to zero; invalid/negative values become zero. Chances clamp to 0–100%, critical defense caps at 100, omitted weapon type uses ranged defense, and zero target HP ignores overkill.
 
 Damage calculations retain the supplied roll order and hit-resolution math. Applied damage, lethal status, lifesteal, and thorns use expected damage per hit, so they are estimates when hit outcomes vary. Block affects expected attack damage, not individual hit values.
+
+## Pet levels
+
+Pet levels are editable in the stat calculator. Each pet uses `damagePerLevel × (level + 20)` and `healthPerLevel × (level + 20)`; the shared `petStats(pet, level)` returns unrounded `damage` and `health`, plus the effective `level`. Pass a definition from `DungeonRush.data.pets`. An omitted level uses that pet's existing default; supplied levels are whole numbers with a minimum of 1, and invalid values use 1. No pet level cap is assumed.
+
+All 43 observed pet/level combinations match after display rounding. See [pet formulas and evidence](sources/pet-formulas.md) for the coefficients, rounding details, and the remaining limits of the observations. Calculations retain fractional stats; the pet table shows full calculated values rather than the game's shortened k/M labels.
+
+## Defense calculator
+
+Enter either melee or ranged **Defense**. The result is the percentage of incoming damage received: defense 0 gives **100%**, defense 100 gives **50%**, and defense 300 gives **25%**. Negative inputs use their absolute value, matching the supplied formula. A blank or invalid input uses zero defense.
 
 ## Integration decisions
 
 - Ring base damage is **6** and necklace base health is **20**, shared by both calculators. These give **457.27k** damage for a Divine level-94 ring and **1.29M** health for a Divine level-69 necklace before enchantments, replacing the supplied calculator's swapped coefficients.
 - Wings cap their effective level at **100** in both calculators.
 - The imported “cloak” uses the shared cape formula.
-- Pets retain the supplied fixed stats at their listed reference levels. This is not a pet-level progression calculator.
-- Both calculators use the existing neutral table, input, and result-card styles. The standalone theme, fonts, colors, and icons are not imported.
+- Pet stats use the level formula inferred from the supplied game snapshots. The spreadsheets contain fixed pet values that disagree with their listed levels; those values are superseded by calculated stats.
+- All calculators use the existing neutral table, input, and result-card styles. The standalone theme, fonts, colors, and icons are not imported.
 
 ## Shared styling and additional calculators
 
@@ -113,4 +136,4 @@ Browser integration checks require Playwright and a browser (Edge on Windows):
 node tests/browser-check.js
 ```
 
-These cover both calculators together, generated controls, input changes, pet selection, damage transfer, keyboard tabs, repeated loading, DOM readiness, and mobile overflow.
+These cover all three calculators, generated controls, weapon radios, bulk gear tiers, relic recommendations and highlight timing, light/dark theme colors, defense percentages, input changes, pet selection, damage transfer, keyboard tabs, repeated loading, DOM readiness, and mobile overflow.
