@@ -170,10 +170,10 @@ test('character totals add gear and selected pets before additive percentage bon
 
     loadout.petsActive = [true];
     const withMonkey = characterStats(loadout);
-    assert.equal(withMonkey.petDamage, 72.5);
-    assert.equal(withMonkey.petHealth, 217.5);
-    near(withMonkey.damage - withoutPets.damage, 97.875);
-    near(withMonkey.health - withoutPets.health, 293.625);
+    assert.equal(withMonkey.petDamage, 10.5);
+    assert.equal(withMonkey.petHealth, 31.5);
+    near(withMonkey.damage - withoutPets.damage, 14.175);
+    near(withMonkey.health - withoutPets.health, 42.525);
 });
 
 test('character calculator uses the same gear, wings, cape, and enchantment rules', () => {
@@ -505,14 +505,15 @@ test('pet growth matches every recorded in-game observation at its displayed pre
 test('pet growth preserves fractional stats, has no wings cap, and normalizes levels', () => {
     const { data, formulas } = loadGame().game;
     const ember = data.pets[0];
-    assert.equal(formulas.petStats(ember).level, 125);
+    assert.equal(formulas.petStats(ember).level, 1);
     assert.equal(formulas.petStats(ember, 91).damage, 55.5);
     assert.equal(formulas.petStats(ember, 91).health, 166.5);
     assert.equal(formulas.petStats(ember, 91.9).level, 91);
     assert.equal(formulas.petStats(ember, '218').damage, 119);
     for (const value of [0, -5, '', NaN, Infinity, 'invalid']) {
-        assert.equal(formulas.petStats(ember, value).level, 1);
-        assert.equal(formulas.petStats(ember, value).damage, 10.5);
+        assert.equal(formulas.petStats(ember, value).level, 0);
+        assert.equal(formulas.petStats(ember, value).damage, 0);
+        assert.equal(formulas.petStats(ember, value).health, 0);
     }
     assert.equal(formulas.petStats(data.pets[7], 225).damage, 1837.5);
     assert.equal(formulas.petStats(data.pets[15], 96).damage - formulas.petStats(data.pets[15], 95).damage, 6750);
@@ -536,4 +537,18 @@ test('character totals use entered pet levels and selection without mutating inp
     near(result.health, (result.gearHealth + 764) * 1.25);
     assert.equal(formulas.characterStats({ petLevels: levels, petsActive: [] }).petDamage, 0);
     assert.equal(JSON.stringify(data.pets), originalData);
+});
+
+test('zero-level pets contribute nothing, even when explicitly selected or selected by default', () => {
+    const { data, formulas } = loadGame().game;
+    const levels = Array(data.pets.length).fill(0);
+    for (const petsActive of [undefined, Array(data.pets.length).fill(true)]) {
+        const totals = formulas.characterStats({ petLevels: levels, petsActive });
+        assert.equal(totals.petDamage, 0);
+        assert.equal(totals.petHealth, 0);
+        assert.ok(totals.pets.every(pet => pet.level === 0 && pet.damage === 0 && pet.health === 0));
+    }
+    levels[0] = 1;
+    assert.equal(formulas.characterStats({ petLevels: levels }).petDamage, 10.5);
+    assert.equal(formulas.characterStats({ petLevels: levels, petsActive: [] }).petDamage, 0);
 });

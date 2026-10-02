@@ -6,7 +6,14 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 
 const script = fs.readFileSync(path.join(__dirname, '..', 'common.js'), 'utf8');
-const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
+// Preview the local sprite without requiring a wiki upload or network access.
+const iconSheet = fs.readFileSync(path.join(__dirname, '..', 'sources', 'icons.webp'));
+const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8').replace(
+    'https://dungeon-rush.fandom.com/wiki/Special:FilePath/Calculator_icons.webp',
+    'data:image/webp;base64,' + iconSheet.toString('base64'))
+    .replace('https://dungeon-rush.fandom.com/wiki/Special:FilePath/Calculator_pet_icons.png',
+        'data:image/png;base64,' + fs.readFileSync(path.join(__dirname, '..', 'sources', 'pet-icons-complete.png')).toString('base64'));
+
 
 (async function () {
     const browser = await chromium.launch({
@@ -17,15 +24,17 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
         const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
-        await page.setContent('<!doctype html><div id="relic-calculator"></div><div id="dungeon-rush-calculator"></div><div id="defense-calculator"></div>' +
+        await page.setContent('<!doctype html><div id="relic-calculator"></div><div id="stat-calculator"></div><div id="damage-calculator"></div><div id="defense-calculator"></div>' +
             '<div id="unrelated"><button class="tab-btn">Unrelated</button><input type="number"></div>');
         await page.addStyleTag({ content: css });
         await page.addScriptTag({ content: script });
         assert.equal(await page.locator('#relic-calculator').getAttribute('data-initialized'), 'true');
-        assert.equal(await page.locator('#dungeon-rush-calculator').getAttribute('data-initialized'), 'true');
-        assert.equal(await page.locator('#dungeon-rush-calculator input[type=checkbox]').count(), 18);
-        assert.equal(await page.locator('#dungeon-rush-calculator .gear-calc-equipment tbody tr').count(), 8);
-        assert.equal(await page.locator('#dr-panel-damage').isVisible(), false);
+        assert.equal(await page.locator('#stat-calculator').getAttribute('data-initialized'), 'true');
+        assert.equal(await page.locator('#stat-calculator input[type=checkbox]').count(), 18);
+        assert.equal(await page.locator('#stat-calculator .gear-calc-equipment tbody tr').count(), 8);
+        assert.equal(await page.locator('#damage-calculator').getAttribute('data-initialized'), 'true');
+        assert.equal(await page.locator('#damage-calculator').isVisible(), true);
+        assert.equal(await page.locator('.dr-calculator [role=tab], .dr-calculator [role=tablist]').count(), 0);
         assert.equal(await page.locator('#gear-calc-total-health').textContent(), '202');
         assert.equal(await page.locator('#gear-calc-total-damage').textContent(), '51');
         const weaponChoices = page.locator('.gear-calc-weapon-type input');
@@ -48,27 +57,71 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
             return ids.filter((id, index) => ids.indexOf(id) !== index);
         }), []);
 
+        // Compact equipment breakdowns keep two lines per stat and include the cape's gear-only gain.
+        assert.deepEqual(await page.locator('#dr-stat-ring-result > div').allTextContents(),
+            ['Base damage: 6.09 + 0.00', 'Total: 6.09']);
+        assert.equal(await page.locator('#dr-stat-wings-result > div').count(), 4);
+        assert.match(await page.locator('#dr-stat-wings-result > div').nth(0).textContent(), /^Base health:/);
+        assert.match(await page.locator('#dr-stat-wings-result > div').nth(2).textContent(), /^Base damage:/);
+        assert.deepEqual(await page.locator('#dr-stat-cape-result > div').allTextContents(),
+            ['Base bonus: 5.00% + 0.00%', 'Total: 5.00%', '(+9.64 health, +2.41 damage)']);
+        await page.locator('#dr-stat-ring-enchantment').fill('10');
+        assert.deepEqual(await page.locator('#dr-stat-ring-result > div').allTextContents(),
+            ['Base damage: 6.09 + 6.09', 'Total: 12.18']);
+        await page.locator('#dr-stat-ring-enchantment').fill('0');
+        await page.locator('#dr-stat-wings-enchantment').fill('10');
+        await page.locator('#dr-stat-cape-enchantment').fill('10');
+        assert.deepEqual(await page.locator('#dr-stat-cape-result > div').allTextContents(),
+            ['Base bonus: 5.00% + 5.00%', 'Total: 10.00%', '(+28.90 health, +7.71 damage)']);
+        await page.locator('#dr-pet-level-0').fill('500');
+        await page.locator('#dr-bonus-damage').fill('200');
+        assert.equal(await page.locator('#dr-stat-cape-result > div').nth(2).textContent(),
+            '(+28.90 health, +7.71 damage)');
+        await page.locator('#dr-stat-helmet-enchantment').fill('10');
+        assert.equal(await page.locator('#dr-stat-cape-result > div').nth(2).textContent(),
+            '(+33.47 health, +7.71 damage)');
+        for (const id of ['helmet', 'wings', 'cape']) await page.locator('#dr-stat-' + id + '-enchantment').fill('0');
+        await page.locator('#dr-pet-level-0').fill('1');
+        await page.locator('#dr-bonus-damage').fill('0');
         const relicDamage = await page.locator('#gear-calc-total-damage').textContent();
         await page.locator('#dr-pets-none').click();
         assert.equal(await page.locator('#dr-pets-damage').textContent(), '0');
         assert.equal(await page.locator('#dr-total-damage').textContent(), '51');
         await page.locator('#dr-pet-0').check();
         assert.equal(await page.locator('.gear-calc-pets input[type=number]').count(), 18);
-        assert.equal(await page.locator('#dr-pets-damage').textContent(), '72.50');
-        assert.equal(await page.locator('#dr-pets-health').textContent(), '217.50');
+        assert.equal(await page.locator('#dr-pets-damage').textContent(), '10.50');
+        assert.equal(await page.locator('#dr-pets-health').textContent(), '31.50');
         await page.locator('#dr-pet-level-0').fill('91');
         assert.equal(await page.locator('#dr-pets-damage').textContent(), '55.50');
         assert.equal(await page.locator('#dr-pets-health').textContent(), '166.50');
         await page.locator('#dr-pet-0').uncheck();
         await page.locator('#dr-pet-level-0').fill('92');
         assert.equal(await page.locator('#dr-pet-damage-0').textContent(), '56');
+        assert.equal(await page.locator('#dr-pet-0').isChecked(), true);
+        assert.equal(await page.locator('#dr-pets-damage').textContent(), '56');
+        await page.locator('#dr-pet-0').uncheck();
+        assert.equal(await page.locator('#dr-pet-level-0').inputValue(), '92');
         assert.equal(await page.locator('#dr-pets-damage').textContent(), '0');
         await page.locator('#dr-pet-0').check();
         assert.equal(await page.locator('#dr-pets-damage').textContent(), '56');
-        for (const invalid of ['', '-5', '0']) {
+        for (const invalid of ['', '-5', '0', '0.9']) {
             await page.locator('#dr-pet-level-0').fill(invalid);
-            assert.equal(await page.locator('#dr-pets-damage').textContent(), '10.50');
+            assert.equal(await page.locator('#dr-pet-0').isChecked(), false);
+            assert.equal(await page.locator('#dr-pets-damage').textContent(), '0');
+            assert.equal(await page.locator('#dr-pet-damage-0').textContent(), '0');
+            assert.equal(await page.locator('#dr-pet-health-0').textContent(), '0');
+            assert.match(await page.locator('#dr-pet-tile-0').getAttribute('class'), /is-inactive/);
         }
+        await page.locator('#dr-bonus-health').fill('1');
+        assert.equal(await page.locator('#dr-pet-0').isChecked(), false);
+        await page.locator('#dr-bonus-health').fill('0');
+        await page.getByRole('checkbox', { name: 'Include Ember Fist', exact: true }).focus();
+        await page.keyboard.press('Space');
+        assert.equal(await page.getByRole('spinbutton', { name: 'Ember Fist level', exact: true }).inputValue(), '92');
+        assert.equal(await page.locator('#dr-pets-damage').textContent(), '56');
+        await page.locator('#dr-pet-tile-0 .gear-calc-pet-portrait').click();
+        assert.equal(await page.locator('#dr-pet-0').isChecked(), false);
+        assert.equal(await page.locator('#dr-pet-level-0').inputValue(), '92');
         await page.locator('#dr-pet-level-0').fill('91.9');
         assert.equal(await page.locator('#dr-pets-damage').textContent(), '55.50');
         await page.locator('#dr-pet-level-0').fill('125');
@@ -84,8 +137,24 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
         }
         assert.equal(await page.locator('#dr-pets-damage').textContent(), '966,937.50');
         assert.equal(await page.locator('#dr-pets-health').textContent(), '2,632,425');
+        await page.locator('#dr-pet-level-0').fill('0');
         await page.locator('#dr-pets-all').click();
-        assert.equal(await page.locator('#dungeon-rush-calculator input[type=checkbox]:checked').count(), 18);
+        assert.equal(await page.locator('#dr-pet-level-0').inputValue(), '125');
+        assert.equal(await page.locator('#dr-pet-level-15').inputValue(), '96');
+        assert.equal(await page.locator('#stat-calculator input[type=checkbox]:checked').count(), 18);
+        assert.ok(await page.locator('.gear-calc-pets').evaluate(grid => {
+            const tiles = Array.from(grid.children, tile => tile.getBoundingClientRect());
+            const tile = grid.firstElementChild;
+            const checkbox = tile.querySelector('input[type=checkbox]').getBoundingClientRect();
+            const icon = tile.querySelector('.dr-calc-icon').getBoundingClientRect();
+            const input = tile.querySelector('input[type=number]').getBoundingClientRect();
+            const name = tile.querySelector('.gear-calc-note').getBoundingClientRect();
+            return tiles.length === 18 && new Set(tiles.map(rect => rect.top)).size === 2 &&
+                grid.getBoundingClientRect().height < 320 &&
+                checkbox.left < icon.left && checkbox.top < icon.top &&
+                checkbox.right <= icon.left && icon.bottom <= input.top && input.bottom <= name.top &&
+                tiles.every(rect => rect.right <= grid.getBoundingClientRect().right + 1);
+        }), 'Pet tiles should fit in two compact rows with the checkbox top-left and name below the level');
         assert.equal(await page.locator('#gear-calc-total-damage').textContent(), relicDamage);
 
         await page.locator('#dr-stat-ring-tier').selectOption('9');
@@ -101,8 +170,8 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
         await page.locator('#gear-calc-wings-level').fill('200');
         assert.equal(await page.locator('#gear-calc-result-wings').textContent(), relicWingsAtCap);
 
-        await page.locator('#dr-tab-damage').click();
-        assert.equal(await page.locator('#dr-panel-stats').isVisible(), false);
+        assert.equal(await page.locator('#stat-calculator').isVisible(), true);
+        assert.equal(await page.locator('#damage-calculator').isVisible(), true);
         assert.equal(await page.locator('#dr-normal-hit').textContent(), '1,000');
         assert.equal(await page.locator('#dr-critical-hit').textContent(), '1,000');
         await page.locator('#dr-damage-criticalDefense').fill('0');
@@ -114,21 +183,29 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
         assert.equal(await page.locator('#dr-normal-hit').textContent(), '500');
 
         const statDamage = Number((await page.locator('#dr-total-damage').textContent()).replace(/,/g, ''));
+        const exactStatDamage = Number(await page.locator('#dr-total-damage').getAttribute('data-damage'));
         await page.locator('#dr-use-stat-damage').click();
         assert.equal(Math.round(Number(await page.locator('#dr-damage-baseDamage').inputValue())), statDamage);
+        assert.equal(Number(await page.locator('#dr-damage-baseDamage').inputValue()), Math.round(exactStatDamage * 100) / 100);
+        await page.locator('#dr-pet-level-0').fill('200');
+        assert.equal(Number(await page.locator('#dr-damage-baseDamage').inputValue()), Math.round(exactStatDamage * 100) / 100);
+        await page.locator('#dr-use-stat-damage').click();
+        assert.equal(Number(await page.locator('#dr-damage-baseDamage').inputValue()),
+            Math.round(Number(await page.locator('#dr-total-damage').getAttribute('data-damage')) * 100) / 100);
 
-        await page.locator('#dr-tab-damage').focus();
-        await page.keyboard.press('ArrowLeft');
-        assert.equal(await page.locator('#dr-tab-stats').getAttribute('aria-selected'), 'true');
-        assert.equal(await page.locator('#dr-panel-stats').isVisible(), true);
+        assert.equal(await page.locator('#stat-calculator').isVisible(), true);
         assert.equal(await page.locator('#unrelated button').getAttribute('aria-selected'), null);
 
-        const before = await page.locator('#dungeon-rush-calculator').innerHTML();
+        const before = await page.locator('#stat-calculator').innerHTML();
         const defenseBefore = await page.locator('#defense-calculator').innerHTML();
+        const damageBefore = await page.locator('#damage-calculator').innerHTML();
+        const damageInputBefore = await page.locator('#dr-damage-baseDamage').inputValue();
         await page.addScriptTag({ content: script });
-        assert.equal(await page.locator('#dungeon-rush-calculator').innerHTML(), before);
+        assert.equal(await page.locator('#stat-calculator').innerHTML(), before);
         assert.equal(await page.locator('#dr-stat-ring-level').inputValue(), '94');
         assert.equal(await page.locator('#defense-calculator').innerHTML(), defenseBefore);
+        assert.equal(await page.locator('#damage-calculator').innerHTML(), damageBefore);
+        assert.equal(await page.locator('#dr-damage-baseDamage').inputValue(), damageInputBefore);
         assert.equal(await page.locator('#defense-calc-value').inputValue(), '100');
         assert.equal(await page.locator('#dr-pet-level-15').inputValue(), '96');
 
@@ -141,26 +218,59 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
         const early = await browser.newPage();
         early.on('pageerror', error => errors.push(error.message));
         await early.setContent('<!doctype html><script>' + script + '</script>' +
-            '<div id="relic-calculator"></div><div id="dungeon-rush-calculator"></div><div id="defense-calculator"></div>');
-        assert.equal(await early.locator('#dungeon-rush-calculator').getAttribute('data-initialized'), 'true');
+            '<div id="relic-calculator"></div><div id="stat-calculator"></div><div id="damage-calculator"></div><div id="defense-calculator"></div>');
+        assert.equal(await early.locator('#stat-calculator').getAttribute('data-initialized'), 'true');
+        assert.equal(await early.locator('#damage-calculator').getAttribute('data-initialized'), 'true');
         assert.equal(await early.locator('#relic-calculator').getAttribute('data-initialized'), 'true');
         assert.equal(await early.locator('#defense-calculator').getAttribute('data-initialized'), 'true');
 
         // The new calculator is usable without the relic calculator, including at mobile widths.
         const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
         mobile.on('pageerror', error => errors.push(error.message));
-        await mobile.setContent('<!doctype html><div id="dungeon-rush-calculator"></div>');
+        await mobile.setContent('<!doctype html><div id="stat-calculator"></div>');
         await mobile.addStyleTag({ content: css });
         await mobile.addScriptTag({ content: script });
         assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-        await mobile.locator('#dr-tab-damage').click();
-        assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-        assert.equal(await mobile.locator('#dr-expected-damage').isVisible(), true);
+        assert.ok(await mobile.locator('.gear-calc-pets').evaluate(grid => {
+            const rect = grid.getBoundingClientRect();
+            return grid.scrollWidth <= grid.clientWidth && Array.from(grid.children).every(tile => {
+                const bounds = tile.getBoundingClientRect();
+                return bounds.left >= rect.left && bounds.right <= rect.right + 1;
+            });
+        }), 'The pet grid should wrap within narrow screens');
+        if (process.env.CALCULATOR_SCREENSHOT_DIR) {
+            fs.mkdirSync(process.env.CALCULATOR_SCREENSHOT_DIR, { recursive: true });
+            await mobile.locator('#dr-pet-section').screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'pets-mobile.png') });
+        }
+        assert.equal(await mobile.locator('#dr-damage-baseDamage').count(), 0);
+        assert.equal(await mobile.locator('#dr-total-damage').isVisible(), true);
+
+        const damageOnly = await browser.newPage({ viewport: { width: 390, height: 844 } });
+        damageOnly.on('pageerror', error => errors.push(error.message));
+        await damageOnly.setContent('<!doctype html><div id="damage-calculator"></div>');
+        await damageOnly.addStyleTag({ content: css });
+        await damageOnly.addScriptTag({ content: script });
+        assert.equal(await damageOnly.locator('#dr-expected-damage').textContent(), '1,000');
+        assert.equal(await damageOnly.locator('#dr-use-stat-damage').isVisible(), false);
+        assert.equal(await damageOnly.locator('#dr-stat-weapon').count(), 0);
+        await damageOnly.locator('#dr-damage-baseDamage').fill('500');
+        await damageOnly.locator('#dr-damage-rangedDefense').fill('100');
+        assert.equal(await damageOnly.locator('#dr-normal-hit').textContent(), '250');
+        assert.ok(await damageOnly.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+
+        const legacy = await browser.newPage();
+        legacy.on('pageerror', error => errors.push(error.message));
+        await legacy.setContent('<!doctype html><div id="dungeon-rush-calculator"></div>');
+        await legacy.addScriptTag({ content: script });
+        assert.equal(await legacy.locator('#dungeon-rush-calculator').getAttribute('data-initialized'), 'true');
+        assert.equal(await legacy.locator('#dr-pet-level-0').inputValue(), '1');
+        assert.equal(await legacy.locator('#dr-damage-baseDamage').count(), 0);
+        await legacy.close();
 
 
         const optimizer = await browser.newPage({ viewport: { width: 1000, height: 850 }, locale: 'en-US' });
         optimizer.on('pageerror', error => errors.push(error.message));
-        await optimizer.setContent('<!doctype html><div id="relic-calculator"></div><div id="dungeon-rush-calculator"></div><div id="defense-calculator"></div>');
+        await optimizer.setContent('<!doctype html><div id="relic-calculator"></div><div id="stat-calculator"></div><div id="damage-calculator"></div><div id="defense-calculator"></div>');
         await optimizer.addStyleTag({ content: css });
         await optimizer.addScriptTag({ content: script });
         await optimizer.clock.install();
@@ -217,14 +327,14 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
         }
         assert.ok(await optimizer.evaluate(compactControlsFit));
         const originalGear = await gearSnapshot();
-        const otherCalculator = await optimizer.locator('#dungeon-rush-calculator').innerHTML();
+        const otherCalculator = await optimizer.locator('#stat-calculator').innerHTML();
         await optimizer.locator('.gear-calc-relic[data-slot="helmet"]').selectOption('8');
         await recommend.click();
         assert.deepEqual(await gearSnapshot(), originalGear);
         assert.equal(await relicBudget(), 2106);
         assert.match(await optimizer.locator('#gear-calc-unassigned').textContent(), /81 level-1/);
         assert.equal(await recommendedBudget(), 2187);
-        assert.equal(await optimizer.locator('#dungeon-rush-calculator').innerHTML(), otherCalculator);
+        assert.equal(await optimizer.locator('#stat-calculator').innerHTML(), otherCalculator);
 
         // Check theme colors and the three-second feedback, including repeated clicks.
         for (const theme of [
@@ -275,6 +385,8 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
                 fs.mkdirSync(process.env.CALCULATOR_SCREENSHOT_DIR, { recursive: true });
                 await recommend.click();
                 await optimizer.locator('#relic-calculator').screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'relic-' + (theme.bg === '#ffffff' ? 'light' : 'dark') + '.png') });
+                await optimizer.locator('#dr-pet-section').screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'pets-' + (theme.bg === '#ffffff' ? 'light' : 'dark') + '.png') });
+                await optimizer.locator('.gear-calc-stat-equipment').screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'gear-' + (theme.bg === '#ffffff' ? 'light' : 'dark') + '.png') });
             }
         }
 
@@ -326,13 +438,14 @@ const css = fs.readFileSync(path.join(__dirname, '..', 'common.css'), 'utf8');
 
         if (process.env.CALCULATOR_SCREENSHOT_DIR) {
             fs.mkdirSync(process.env.CALCULATOR_SCREENSHOT_DIR, { recursive: true });
-            await page.locator('.gear-calc-pets').screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'pet-levels.png') });
+            await page.locator('#dr-pet-section').screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'pet-levels.png') });
             await page.screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'calculators-desktop.png'), fullPage: true });
             await defenseOnly.screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'defense-mobile.png'), fullPage: true });
             await mobile.screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'calculator-mobile.png'), fullPage: true });
+            await damageOnly.screenshot({ path: path.join(process.env.CALCULATOR_SCREENSHOT_DIR, 'damage-mobile.png'), fullPage: true });
         }
         assert.deepEqual(errors, []);
-        console.log('PASS: all three calculators, weapon radios, bulk tiers, themed button and timed relic highlights, defense formula, editable pet levels and totals, damage transfer, tabs, duplicate loading, DOM readiness, mobile layout, and relic optimization.');
+        console.log('PASS: all four calculators, weapon radios, bulk tiers, themed button and timed relic highlights, defense formula, compact pet grid, zero levels, activation and totals, compact gear/cape breakdowns, independent stat/damage pages, damage transfer, legacy container, duplicate loading, DOM readiness, mobile layout, and relic optimization.');
     } finally {
         await browser.close();
     }

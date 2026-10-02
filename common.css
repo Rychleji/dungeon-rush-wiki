@@ -87,6 +87,40 @@
 }
 
 
+/* The stat calculator gives results more room and keeps numeric inputs compact. */
+.dr-calculator .gear-calc-stat-equipment {
+    min-width: 740px;
+}
+
+.dr-calculator .gear-calc-stat-equipment th:nth-child(1),
+.dr-calculator .gear-calc-stat-equipment td:nth-child(1) {
+    width: 13%;
+}
+
+.dr-calculator .gear-calc-stat-equipment th:nth-child(2),
+.dr-calculator .gear-calc-stat-equipment td:nth-child(2) {
+    width: 17%;
+}
+
+.dr-calculator .gear-calc-stat-equipment th:nth-child(3),
+.dr-calculator .gear-calc-stat-equipment td:nth-child(3) {
+    width: 10%;
+}
+
+.dr-calculator .gear-calc-stat-equipment th:nth-child(4),
+.dr-calculator .gear-calc-stat-equipment td:nth-child(4) {
+    width: 16%;
+}
+
+.dr-calculator .gear-calc-stat-equipment th:nth-child(5),
+.dr-calculator .gear-calc-stat-equipment td:nth-child(5) {
+    width: 44%;
+}
+
+.dr-calculator .gear-calc-stat-equipment .gear-calc-stat {
+    white-space: normal;
+}
+
 /* Item names */
 
 .dr-calculator .gear-calc-table tbody th {
@@ -293,13 +327,8 @@
     cursor: pointer;
 }
 
-.dr-calculator button:not(.wds-button):hover,
-.dr-calculator button[aria-selected="true"] {
+.dr-calculator button:not(.wds-button):hover {
     background: rgba(128, 128, 128, 0.15);
-}
-
-.dr-calculator button[aria-selected="true"] {
-    font-weight: bold;
 }
 
 .dr-calculator button:focus-visible,
@@ -324,17 +353,69 @@
 }
 
 .dr-calculator .gear-calc-pets {
-    table-layout: auto;
-    min-width: 640px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
 }
 
-.dr-calculator .gear-calc-pets input[type="number"] {
-    width: 5.5em;
+.dr-calculator .gear-calc-pet {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 12px 8px 8px;
+    border: 1px solid rgba(128, 128, 128, 0.35);
+    border-radius: 4px;
+    text-align: center;
 }
 
-.dr-calculator .gear-calc-pets td:nth-last-child(-n+3),
-.dr-calculator .gear-calc-pets thead th:nth-last-child(-n+3) {
-    text-align: right;
+.dr-calculator .gear-calc-pet-active {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--theme-accent-color, auto);
+    cursor: pointer;
+}
+
+.dr-calculator .gear-calc-pet-portrait {
+    display: flex;
+    cursor: pointer;
+}
+
+.dr-calculator .gear-calc-pet input[type="number"] {
+    width: 100%;
+    max-width: 5.5em;
+    height: 32px;
+    padding: 4px 6px;
+    text-align: center;
+}
+
+.dr-calculator .gear-calc-pet .gear-calc-note {
+    min-height: 2.4em;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.dr-calculator .gear-calc-pet.is-inactive .dr-calc-icon {
+    opacity: 0.4;
+    filter: grayscale(0.65);
+}
+
+.dr-calculator .gear-calc-pet.is-inactive {
+    background-color: rgba(128, 128, 128, 0.06);
+}
+
+.dr-calculator .gear-calc-pet-totals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 12px;
+    font-size: 0.9em;
 }
 
 @media (max-width: 700px) {
@@ -400,3 +481,51 @@
     grid-template-columns: minmax(0, 1fr);
     margin-bottom: 12px;
 }
+
+
+/* Icons from sources/icons.webp (426 x 293). Upload as File:Calculator_icons.webp.
+ * Source tiles are 40px; --dr-icon-size controls display size (40px by default).
+ * Change only this URL if the wiki file is uploaded under a different name. */
+.dr-calculator .dr-calc-icon {
+    display: inline-block;
+    --dr-icon-size: 40px;
+    flex: 0 0 var(--dr-icon-size);
+    width: var(--dr-icon-size);
+    height: var(--dr-icon-size);
+    border-radius: 50%;
+    background-image: url("https://dungeon-rush.fandom.com/wiki/Special:FilePath/Calculator_icons.webp");
+    background-repeat: no-repeat;
+    background-size: calc(var(--dr-icon-size) * 10.65) calc(var(--dr-icon-size) * 7.325);
+    background-position: calc(var(--dr-icon-size) * var(--dr-icon-x) / -40) calc(var(--dr-icon-size) * var(--dr-icon-y) / -40);
+}
+
+.dr-calculator .dr-calc-icon-ember-fist { --dr-icon-x: 186; --dr-icon-y: 7; }
+.dr-calculator .dr-calc-icon-magic-wool { --dr-icon-x: 234; --dr-icon-y: 7; }
+.dr-calculator .dr-calc-icon-spark-mouse { --dr-icon-x: 282; --dr-icon-y: 7; }
+.dr-calculator .dr-calc-icon-flame-wing { --dr-icon-x: 42; --dr-icon-y: 103; }
+.dr-calculator .dr-calc-icon-life-horn { --dr-icon-x: 90; --dr-icon-y: 103; }
+.dr-calculator .dr-calc-icon-snow-fang { --dr-icon-x: 138; --dr-icon-y: 103; }
+.dr-calculator .dr-calc-icon-blaze-tail { --dr-icon-x: 330; --dr-icon-y: 55; }
+.dr-calculator .dr-calc-icon-frost-claw { --dr-icon-x: 378; --dr-icon-y: 55; }
+.dr-calculator .dr-calc-icon-arcane-paw { --dr-icon-x: 330; --dr-icon-y: 7; }
+.dr-calculator .dr-calc-icon-echo-wing { --dr-icon-x: 42; --dr-icon-y: 55; }
+.dr-calculator .dr-calc-icon-phantom-gaze { --dr-icon-x: 138; --dr-icon-y: 55; }
+.dr-calculator .dr-calc-icon-star-feather { --dr-icon-x: 90; --dr-icon-y: 55; }
+
+.dr-calculator .dr-calc-icon-celestial-mind { --dr-icon-x: 186; --dr-icon-y: 55; }
+.dr-calculator .dr-calc-icon-halo-hare { --dr-icon-x: 234; --dr-icon-y: 55; }
+.dr-calculator .dr-calc-icon-radiant-talon { --dr-icon-x: 282; --dr-icon-y: 55; }
+
+/* Original circular portraits from sources/pet-icons-complete.png (135 x 46).
+ * Each source tile is 42px; it shares the --dr-icon-size setting above. */
+.dr-calculator .dr-calc-icon-glacier-fist,
+.dr-calculator .dr-calc-icon-storm-eye,
+.dr-calculator .dr-calc-icon-vital-root {
+    background-image: url("https://dungeon-rush.fandom.com/wiki/Special:FilePath/Calculator_pet_icons.png");
+    background-size: calc(var(--dr-icon-size) * 135 / 42) calc(var(--dr-icon-size) * 46 / 42);
+    background-position: calc(var(--dr-icon-size) * var(--dr-icon-x) / -42) 0;
+}
+
+.dr-calculator .dr-calc-icon-glacier-fist { --dr-icon-x: 0; }
+.dr-calculator .dr-calc-icon-storm-eye { --dr-icon-x: 46; }
+.dr-calculator .dr-calc-icon-vital-root { --dr-icon-x: 92; }

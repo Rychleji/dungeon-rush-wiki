@@ -51,11 +51,13 @@ The coefficients can also be grouped into three damage/health pairs: (0.75, 1), 
 
 The observations are consistent with truncating values below 1,000 to whole numbers, and rounding k/M values to two decimal places. For example, Ember Fist at level 91 calculates to 55.5 damage and 166.5 health, displayed in the snapshot as 55 and 166.
 
-The calculator retains fractional values for totals and shows full calculated numbers in the pet table. Whether the game itself retains all fractions internally cannot be determined solely from these displayed observations. No pet level cap was supplied; the wings level cap does not apply to pets.
+The calculator retains fractional values for totals and makes full calculated numbers available in each pet tile’s tooltip and accessible description. Whether the game itself retains all fractions internally cannot be determined solely from these displayed observations. No pet level cap was supplied; the wings level cap does not apply to pets.
 
 ## Spreadsheet comparison
 
 - **Dungeon Rush Stat Calc.xlsx**, `Sheet3!B19:G36`: pet levels and stats are manually entered, without a growth formula. Several levels disagree with the new observations' model. For example, Ember Fist's 81 damage / 243 health corresponds to level 142 under this model, but its listed level is 125.
 - **Dungeon Rush.xlsx**, `Damage!M1:X5` and `'Health Calulator '!M1:X5` (the latter sheet name includes a trailing space): pet stats are entered as constants without matching pet levels.
 
-The source workbooks are unchanged. The calculator retains its original default levels but replaces the inconsistent fixed stat values with the model above. The snapshot's name **Blaze Tail** replaces the old imported **Blaze Trail** spelling.
+The source workbooks are unchanged. The calculator defaults all pets to level 1 and replaces the inconsistent fixed stat values with the model above. The snapshot's name **Blaze Tail** replaces the old imported **Blaze Trail** spelling.
+
+Level 0 is a calculator UI convention for an inactive or unowned pet. It contributes zero stats; the observed growth formula applies only to positive levels.

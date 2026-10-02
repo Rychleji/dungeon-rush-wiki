@@ -10,10 +10,16 @@ For the original relic calculator:
 <div id="relic-calculator"></div>
 ```
 
-For the stat and damage calculator:
+For the stat calculator:
 
 ```html
-<div id="dungeon-rush-calculator"></div>
+<div id="stat-calculator"></div>
+```
+
+For the damage calculator:
+
+```html
+<div id="damage-calculator"></div>
 ```
 
 For the defense calculator:
@@ -22,9 +28,30 @@ For the defense calculator:
 <div id="defense-calculator"></div>
 ```
 
-All three may appear on the same page, once each. JavaScript creates every input, dropdown, button, tab, and result. Only these containers belong in article source; do not paste the standalone HTML document into an article.
+All four may appear on the same page, once each, or on separate pages. JavaScript creates every input, dropdown, button, and result. Only these containers belong in article source; do not paste the standalone HTML document into an article.
 
-The stat tab includes gear, wings, cape, enchantments, additional percentage bonuses, and pet selection. The damage tab handles critical/mega hits, defense, block, multi-hit chances, lifesteal, thorns, and optional target HP. Its copy button takes the current stat total damage; other damage inputs remain separately editable.
+The stat calculator includes gear, wings, cape, enchantments, additional percentage bonuses, and pet selection. The damage calculator handles critical/mega hits, defense, block, multi-hit chances, lifesteal, thorns, and optional target HP. There are no switching tabs. If both calculators are on the same page, the damage calculator shows a button to copy the current total damage from the stat calculator; on a separate page, enter base damage manually. Other damage inputs remain separately editable.
+
+The old `dungeon-rush-calculator` ID remains an alias for the stat calculator only. Use `stat-calculator` for new markup. If both IDs are present, the new ID takes precedence so controls are not duplicated.
+
+Gear results show `Base damage/health: base + enchantment` followed by `Total: value`. Wings show both stats, for four lines. Cape results show `Base bonus: base% + enchantment%` and `Total: effective%`, with `(+health, +damage)` on a separate line below. The parenthetical values are the cape’s added stats from all equipped gear and wings, including their enchantments and excluding pets and other percentage bonuses. This is a display breakdown; the existing character-total and damage formulas are unchanged.
+
+## Calculator icons
+
+The calculators use the supplied `sources/icons.webp` sprite sheet for pet portraits. Glacier Fist, Storm Eye, and Vital Root use the additional original circular portraits in `sources/pet-icons-complete.png`. Both source images are used unchanged. Visible text is retained; icons are decorative and hidden from screen readers. Icons appear only on pet tiles; section headings and equipment labels remain text-only.
+
+To deploy the icons:
+
+1. Upload `sources/icons.webp` through [Special:Upload](https://dungeon-rush.fandom.com/wiki/Special:Upload), using the destination filename **Calculator_icons.webp**. Keep the original 426 × 293 image dimensions.
+2. Upload `sources/pet-icons-complete.png` as **Calculator_pet_icons.png**, keeping its original 135 × 46 dimensions.
+3. Publish the updated `common.css` and `common.js` through the usual wiki process.
+4. If you use different filenames, update the corresponding `background-image` URLs in the icon section of `common.css`.
+
+The CSS uses [Special:FilePath image links](https://www.mediawiki.org/wiki/Help:Linking_to_files#Direct_links_from_external_sites) for the two small sprite sheets. No libraries or image API calls are required. Labels and calculations remain usable if any image is unavailable.
+
+The source has an opaque dark background. Pet portraits are clipped to circles. Icons retain their game colors, while calculator text and controls retain the active wiki theme. These additions do not change Fandom’s mobile JavaScript restriction.
+
+Rarity groups were confirmed by the user; portraits within each group are matched by animal appearance. All pets now use original game portraits. The earlier reconstructed images are retained only as unused drafts under `sources/icon-references/reconstructed/`. See [the icon map](sources/icons.md) for all positions.
 
 ## Recommended relic distribution
 
@@ -89,8 +116,8 @@ Formulas return unrounded numbers. UI code validates levels and rounds only for 
 - `gear`: an object keyed by shared equipment IDs, plus `wings`. Each supplied slot needs `{ tier, level, relicLevel }`; omitted slots use Common level 1 without enchantments.
 - `cape`: `{ rarity, level, relicLevel }`, defaulting to Common level 1 without enchantments.
 - `bonuses`: numeric percentage values for `damage`, `health`, `ranged`, `melee`, and `crit`.
-- `petsActive`: booleans indexed like `DungeonRush.data.pets`. Omit to include all pets; pass `[]` to include none.
-- `petLevels`: levels indexed like `DungeonRush.data.pets`; omitted entries use the original default levels.
+- `petsActive`: booleans indexed like `DungeonRush.data.pets`. Omit to include all positive-level pets; pass `[]` to include none.
+- `petLevels`: levels indexed like `DungeonRush.data.pets`; omitted entries use level 1.
 
 It returns per-pet stats (`pets`, including unselected pets), equipment breakdowns (`gear`, `wings`, `cape`), `gearDamage`, `gearHealth`, `petDamage`, `petHealth`, `damageMultiplier`, `healthMultiplier`, `damage`, `health`, and `criticalDamage`.
 
@@ -100,9 +127,11 @@ Damage calculations retain the supplied roll order and hit-resolution math. Appl
 
 ## Pet levels
 
-Pet levels are editable in the stat calculator. Each pet uses `damagePerLevel × (level + 20)` and `healthPerLevel × (level + 20)`; the shared `petStats(pet, level)` returns unrounded `damage` and `health`, plus the effective `level`. Pass a definition from `DungeonRush.data.pets`. An omitted level uses that pet's existing default; supplied levels are whole numbers with a minimum of 1, and invalid values use 1. No pet level cap is assumed.
+Pet levels are editable in the stat calculator. Each pet uses `damagePerLevel × (level + 20)` and `healthPerLevel × (level + 20)`; the shared `petStats(pet, level)` returns unrounded `damage` and `health`, plus the effective `level`. Pass a definition from `DungeonRush.data.pets`. All pets default to level 1; an omitted level also uses 1; supplied levels are whole numbers with a minimum of 0. Level 0 (also blank, negative, or invalid input) represents an inactive pet and returns zero damage and health. No pet level cap is assumed.
 
-All 43 observed pet/level combinations match after display rounding. See [pet formulas and evidence](sources/pet-formulas.md) for the coefficients, rounding details, and the remaining limits of the observations. Calculations retain fractional stats; the pet table shows full calculated values rather than the game's shortened k/M labels.
+All 43 observed pet/level combinations match after display rounding. See [pet formulas and evidence](sources/pet-formulas.md) for the coefficients, rounding details, and the remaining limits of the observations. Calculations retain fractional stats. Each compact tile has a 40px icon, a top-left activation checkbox, a level input, and a muted name underneath. Rarity and full calculated stats are available on hover and in the level input's accessible description; selected pet damage and health appear beneath the grid.
+
+Entering level 0 unchecks the pet; entering a positive level checks it. Unchecking preserves the entered level. Checking a zero-level pet (or choosing **Select all**) restores its last positive level, initially level 1. **Deselect all** preserves all levels. Inactive icons are dimmed, and the level input remains editable. The grid wraps to fit narrow screens.
 
 ## Defense calculator
 
@@ -114,11 +143,11 @@ Enter either melee or ranged **Defense**. The result is the percentage of incomi
 - Wings cap their effective level at **100** in both calculators.
 - The imported “cloak” uses the shared cape formula.
 - Pet stats use the level formula inferred from the supplied game snapshots. The spreadsheets contain fixed pet values that disagree with their listed levels; those values are superseded by calculated stats.
-- All calculators use the existing neutral table, input, and result-card styles. The standalone theme, fonts, colors, and icons are not imported.
+- All calculators use the existing neutral table, input, and result-card styles. The supplied standalone HTML theme and fonts are not imported; game icons come from the separate source sprite sheet.
 
 ## Shared styling and additional calculators
 
-Initializers add `dr-calculator` to their roots automatically. All CSS is scoped to that class. Existing `gear-calc` components are shared; `gear-calc-equipment` applies the five-column gear widths, while the pet table uses a separate layout.
+Initializers add `dr-calculator` to their roots automatically. All CSS is scoped to that class. Existing `gear-calc` components are shared; `gear-calc-equipment` applies the five-column gear widths, while pets use a responsive tile grid.
 
 Keep each calculator's DOM setup, input reading, and rendering in a separate initializer. Reuse the shared data and formulas, scope queries to its root, use distinct IDs, and register it in `initCalculators`. A separate wiki script using the shared API must run after `common.js`.
 
@@ -136,4 +165,4 @@ Browser integration checks require Playwright and a browser (Edge on Windows):
 node tests/browser-check.js
 ```
 
-These cover all three calculators, generated controls, weapon radios, bulk gear tiers, relic recommendations and highlight timing, light/dark theme colors, defense percentages, input changes, pet selection, damage transfer, keyboard tabs, repeated loading, DOM readiness, and mobile overflow.
+These cover all four calculators, generated controls, weapon radios, bulk gear tiers, relic recommendations and highlight timing, light/dark theme colors, defense percentages, input changes, zero-level pets, activation and level restoration, pet grid layout, damage transfer, independent stat/damage roots, compact gear/cape breakdowns, legacy markup, repeated loading, DOM readiness, and mobile overflow.

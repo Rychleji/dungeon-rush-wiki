@@ -90,7 +90,6 @@
         }
     ];
 
-
     var weaponTypes = [
         { name: 'Melee',  value: 9 },
         { name: 'Ranged', value: 7 }
@@ -103,30 +102,28 @@
         maxLevel: 100
     };
 
-
     /* Pet growth inferred from sources/pets snapshot.txt; see sources/pet-formulas.md.
-     * Keep the original default levels, but calculate stats from the entered level. */
+     * All pets start at level 1; calculate stats from the entered level. */
     var pets = [
-        { rarity:'Common',    animal:'Monkey',           name:'Ember Fist',      level:125, damagePerLevel:0.5, healthPerLevel:1.5 },
-        { rarity:'Common',    animal:'Sheep',            name:'Magic Wool',      level:124, damagePerLevel:0.25, healthPerLevel:2.5 },
-        { rarity:'Common',    animal:'Mouse',            name:'Spark Mouse',     level:123, damagePerLevel:0.75, healthPerLevel:1 },
-        { rarity:'Uncommon',  animal:'Red bird',         name:'Flame Wing',      level:120, damagePerLevel:2.25, healthPerLevel:3 },
-        { rarity:'Uncommon',  animal:'Deer',             name:'Life Horn',       level:122, damagePerLevel:0.75, healthPerLevel:7.5 },
-        { rarity:'Uncommon',  animal:'Snow Fox',         name:'Snow Fang',       level:116, damagePerLevel:1.5, healthPerLevel:4.5 },
-        { rarity:'Rare',      animal:'Fire Fox',         name:'Blaze Tail',     level:141, damagePerLevel:22.5, healthPerLevel:30 },
-        { rarity:'Rare',      animal:'Polar Bear',       name:'Frost Claw',      level:140, damagePerLevel:7.5, healthPerLevel:75 },
-        { rarity:'Rare',      animal:'Yellow cat horns', name:'Storm Eye',       level:143, damagePerLevel:15, healthPerLevel:45 },
-        { rarity:'Epic',      animal:'Purple 3-eyed',    name:'Arcane Paw',      level:127, damagePerLevel:225, healthPerLevel:300 },
-        { rarity:'Epic',      animal:'Yeti',             name:'Glacier Fist',    level:127, damagePerLevel:150, healthPerLevel:450 },
-        { rarity:'Epic',      animal:'Green insect',     name:'Vital Root',      level:126, damagePerLevel:75, healthPerLevel:750 },
-        { rarity:'Legendary', animal:'Bat',              name:'Echo Wing',       level:86, damagePerLevel:2250, healthPerLevel:3000 },
-        { rarity:'Legendary', animal:'Green elemental',  name:'Phantom Gaze',    level:90, damagePerLevel:1500, healthPerLevel:4500 },
-        { rarity:'Legendary', animal:'Phoenix',          name:'Star Feather',    level:94, damagePerLevel:750, healthPerLevel:7500 },
-        { rarity:'Mythic',    animal:'Alien',            name:'Celestial Mind',  level:13, damagePerLevel:6750, healthPerLevel:9000 },
-        { rarity:'Mythic',    animal:'Rabbit',           name:'Halo Hare',       level:14, damagePerLevel:4500, healthPerLevel:13500 },
-        { rarity:'Mythic',    animal:'Dragon',           name:'Radiant Talon',   level:14, damagePerLevel:2250, healthPerLevel:22500 }
+        { rarity:'Common',    animal:'Monkey',           name:'Ember Fist',      icon:'ember-fist', level:1, damagePerLevel:0.5, healthPerLevel:1.5 },
+        { rarity:'Common',    animal:'Sheep',            name:'Magic Wool',      icon:'magic-wool', level:1, damagePerLevel:0.25, healthPerLevel:2.5 },
+        { rarity:'Common',    animal:'Mouse',            name:'Spark Mouse',     icon:'spark-mouse', level:1, damagePerLevel:0.75, healthPerLevel:1 },
+        { rarity:'Uncommon',  animal:'Red bird',         name:'Flame Wing',      icon:'flame-wing', level:1, damagePerLevel:2.25, healthPerLevel:3 },
+        { rarity:'Uncommon',  animal:'Deer',             name:'Life Horn',       icon:'life-horn', level:1, damagePerLevel:0.75, healthPerLevel:7.5 },
+        { rarity:'Uncommon',  animal:'Snow Fox',         name:'Snow Fang',       icon:'snow-fang', level:1, damagePerLevel:1.5, healthPerLevel:4.5 },
+        { rarity:'Rare',      animal:'Fire Fox',         name:'Blaze Tail',     icon:'blaze-tail', level:1, damagePerLevel:22.5, healthPerLevel:30 },
+        { rarity:'Rare',      animal:'Polar Bear',       name:'Frost Claw',      icon:'frost-claw', level:1, damagePerLevel:7.5, healthPerLevel:75 },
+        { rarity:'Rare',      animal:'Yellow cat horns', name:'Storm Eye',       icon:'storm-eye', level:1, damagePerLevel:15, healthPerLevel:45 },
+        { rarity:'Epic',      animal:'Purple 3-eyed',    name:'Arcane Paw',      icon:'arcane-paw', level:1, damagePerLevel:225, healthPerLevel:300 },
+        { rarity:'Epic',      animal:'Yeti',             name:'Glacier Fist',    icon:'glacier-fist', level:1, damagePerLevel:150, healthPerLevel:450 },
+        { rarity:'Epic',      animal:'Green insect',     name:'Vital Root',      icon:'vital-root', level:1, damagePerLevel:75, healthPerLevel:750 },
+        { rarity:'Legendary', animal:'Bat',              name:'Echo Wing',       icon:'echo-wing', level:1, damagePerLevel:2250, healthPerLevel:3000 },
+        { rarity:'Legendary', animal:'Green elemental',  name:'Phantom Gaze',    icon:'phantom-gaze', level:1, damagePerLevel:1500, healthPerLevel:4500 },
+        { rarity:'Legendary', animal:'Phoenix',          name:'Star Feather',    icon:'star-feather', level:1, damagePerLevel:750, healthPerLevel:7500 },
+        { rarity:'Mythic',    animal:'Alien',            name:'Celestial Mind',  icon:'celestial-mind', level:1, damagePerLevel:6750, healthPerLevel:9000 },
+        { rarity:'Mythic',    animal:'Rabbit',           name:'Halo Hare',       icon:'halo-hare', level:1, damagePerLevel:4500, healthPerLevel:13500 },
+        { rarity:'Mythic',    animal:'Dragon',           name:'Radiant Talon',   icon:'radiant-talon', level:1, damagePerLevel:2250, healthPerLevel:22500 }
     ];
-
 
     /* =========================================================
      * SHARED FORMULAS
@@ -196,7 +193,6 @@
         return ((49 + level) / 10) * multiplier;
     }
 
-
     /* Equipment helpers accept an optional relic level (default: empty). */
     function gearStat(baseStat, tier, level, relicLevel) {
         return itemStat(baseStat, tier, level) *
@@ -226,7 +222,6 @@
         };
     }
 
-
     /* Enchantment uses the same square-level bonus as relics. */
     function enchantmentBonus(baseValue, level) {
         return baseValue * relicBonusPercent(level || 0) / 100;
@@ -235,11 +230,11 @@
     // Return unrounded stats. All observed pets follow coefficient * (level + 20).
     function petStats(pet, level) {
         var value = Number(level === undefined ? pet.level : level);
-        var effectiveLevel = isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
+        var effectiveLevel = isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
         return {
             level: effectiveLevel,
-            damage: pet.damagePerLevel * (effectiveLevel + 20),
-            health: pet.healthPerLevel * (effectiveLevel + 20)
+            damage: effectiveLevel > 0 ? pet.damagePerLevel * (effectiveLevel + 20) : 0,
+            health: effectiveLevel > 0 ? pet.healthPerLevel * (effectiveLevel + 20) : 0
         };
     }
 
@@ -380,8 +375,6 @@
             thornsReflect: lethal ? 0 : appliedDamage * chance('thorns')
         };
     }
-
-
 
     /* Normalize both stats to the shared wings ratio: 30 health = 9 damage. */
     function powerScore(health, damage) {
@@ -595,6 +588,59 @@
      * SHARED UI HELPERS
      * ========================================================= */
 
+    /* Shared controls and output helpers, scoped to each calculator's container. */
+    function calculatorUI(root) {
+        function element(name) {
+            return root.querySelector('#dr-' + name);
+        }
+
+        function number(name, minimum, integer) {
+            var value = parseFloat(element(name).value);
+            if (!isFinite(value)) {
+                value = minimum === undefined ? 0 : minimum;
+            }
+            if (integer) {
+                value = Math.floor(value);
+            }
+            return minimum === undefined ? value : Math.max(minimum, value);
+        }
+
+        function output(name, value) {
+            element(name).textContent = value;
+        }
+
+        function field(name, label, value, minimum, step) {
+            return '<label for="dr-' + name + '">' + label +
+                '<input class="gear-calc-input" type="number" id="dr-' + name + '"' +
+                ' value="' + value + '" step="' + (step || '0.01') + '"' +
+                (minimum === undefined ? '' : ' min="' + minimum + '"') + '></label>';
+        }
+
+        function weaponField(name) {
+            return '<label for="dr-' + name + '">Weapon type' +
+                '<select id="dr-' + name + '">' +
+                weaponTypes.map(function (type) {
+                    var key = type.name.toLowerCase();
+                    return '<option value="' + key + '"' + (key === 'ranged' ? ' selected' : '') +
+                        '>' + type.name + '</option>';
+                }).join('') + '</select></label>';
+        }
+
+        function detail(label, name) {
+            return '<div>' + label + ': <span id="dr-' + name + '">0</span></div>';
+        }
+
+        function card(label, name, details, compact) {
+            return '<div class="gear-calc-result"><span>' + label + '</span>' +
+                '<strong id="dr-' + name + '">0</strong>' +
+                (compact ? '<small id="dr-' + name + '-compact"></small>' : '') +
+                '<div class="gear-calc-breakdown">' + details + '</div></div>';
+        }
+
+        return { element: element, number: number, output: output, field: field,
+            weaponField: weaponField, detail: detail, card: card };
+    }
+
     function makeOptions(options) {
         return options.map(function (option) {
             return '<option value="' + option.value + '">' + option.name + '</option>';
@@ -652,7 +698,6 @@
         powerScore: powerScore
     };
 
-
     /* =========================================================
      * RELIC CALCULATOR UI
      * ========================================================= */
@@ -670,7 +715,6 @@
 
         root.setAttribute('data-initialized', 'true');
         root.classList.add('dr-calculator');
-
 
         /* =========================================================
          * HTML HELPERS
@@ -693,11 +737,9 @@
             return html;
         }
 
-
         var tierOptions = makeOptions(tiers);
         var capeTierOptions = makeOptions(capeTiers);
         var relicOptions = makeRelicOptions();
-
 
         /* =========================================================
          * BUILD NORMAL GEAR ROWS
@@ -718,12 +760,10 @@
 
             rows +=
                 '<tr>' +
-
                     '<th scope="row">' +
                         '<div>' + item.name + '</div>' +
                         extra +
                     '</th>' +
-
                     '<td>' +
                         '<select ' +
                             'class="gear-calc-tier" ' +
@@ -731,7 +771,6 @@
                             tierOptions +
                         '</select>' +
                     '</td>' +
-
                     '<td>' +
                         '<input ' +
                             'class="gear-calc-input gear-calc-level" ' +
@@ -741,7 +780,6 @@
                             'value="1" ' +
                             'data-slot="' + item.id + '">' +
                     '</td>' +
-
                     '<td>' +
                         '<select ' +
                             'class="gear-calc-relic" ' +
@@ -749,16 +787,13 @@
                             relicOptions +
                         '</select>' +
                     '</td>' +
-
                     '<td ' +
                         'class="gear-calc-stat" ' +
                         'id="gear-calc-result-' + item.id + '">' +
                         '—' +
                     '</td>' +
-
                 '</tr>';
         });
-
 
         /* =========================================================
          * WINGS
@@ -766,15 +801,12 @@
 
         rows +=
             '<tr>' +
-
                 '<th scope="row">Wings<small class="gear-calc-note">Level cap: ' + wings.maxLevel + '</small></th>' +
-
                 '<td>' +
                     '<select id="gear-calc-wings-tier">' +
                         tierOptions +
                     '</select>' +
                 '</td>' +
-
                 '<td>' +
                     '<input ' +
                         'id="gear-calc-wings-level" ' +
@@ -785,7 +817,6 @@
                         'step="1" ' +
                         'value="1">' +
                 '</td>' +
-
                 '<td>' +
                     '<select ' +
                         'id="gear-calc-wings-relic" ' +
@@ -793,15 +824,12 @@
                         relicOptions +
                     '</select>' +
                 '</td>' +
-
                 '<td ' +
                     'class="gear-calc-stat" ' +
                     'id="gear-calc-result-wings">' +
                     '—' +
                 '</td>' +
-
             '</tr>';
-
 
         /* =========================================================
          * CAPE
@@ -809,15 +837,12 @@
 
         rows +=
             '<tr>' +
-
                 '<th scope="row">Cape</th>' +
-
                 '<td>' +
                     '<select id="gear-calc-cape-tier">' +
                         capeTierOptions +
                     '</select>' +
                 '</td>' +
-
                 '<td>' +
                     '<input ' +
                         'id="gear-calc-cape-level" ' +
@@ -827,7 +852,6 @@
                         'step="1" ' +
                         'value="1">' +
                 '</td>' +
-
                 '<td>' +
                     '<select ' +
                         'id="gear-calc-cape-relic" ' +
@@ -835,15 +859,12 @@
                         relicOptions +
                     '</select>' +
                 '</td>' +
-
                 '<td ' +
                     'class="gear-calc-stat" ' +
                     'id="gear-calc-result-cape">' +
                     '—' +
                 '</td>' +
-
             '</tr>';
-
 
         /* =========================================================
          * MAIN HTML
@@ -851,9 +872,7 @@
 
         root.innerHTML =
             '<div class="gear-calc">' +
-
                 '<table class="gear-calc-table gear-calc-equipment">' +
-
                     '<thead>' +
                         '<tr>' +
                             '<th>Item</th>' +
@@ -867,14 +886,10 @@
                             '<th>Calculated stat</th>' +
                         '</tr>' +
                     '</thead>' +
-
                     '<tbody>' +
                         rows +
                     '</tbody>' +
-
                 '</table>' +
-
-
                 '<div class="gear-calc-actions gear-calc-distribution">' +
                     '<label for="gear-calc-objective">Optimize for' +
                         '<select id="gear-calc-objective">' +
@@ -889,29 +904,22 @@
                     'Relics can be split or merged at 3:1; gear stays unchanged.</p>' +
                 '<p class="gear-calc-note" id="gear-calc-recommend-status" role="status" aria-live="polite"></p>' +
                 '<p class="gear-calc-note" id="gear-calc-unassigned" hidden></p>' +
-
                 '<div class="gear-calc-results">' +
-
                     '<div class="gear-calc-result">' +
                         '<span>Total Health</span>' +
                         '<strong id="gear-calc-total-health">0</strong>' +
                     '</div>' +
-
                     '<div class="gear-calc-result">' +
                         '<span>Total Damage</span>' +
                         '<strong id="gear-calc-total-damage">0</strong>' +
                     '</div>' +
-
                     '<div class="gear-calc-result">' +
                         '<span>Relic Value</span>' +
                         '<strong id="gear-calc-relic-value">0</strong>' +
                         '<small>level-1 relic equivalents</small>' +
                     '</div>' +
-
                 '</div>' +
-
             '</div>';
-
 
         /* =========================================================
          * INPUT HELPERS
@@ -953,7 +961,6 @@
             return element.value;
         }
 
-
         /* =========================================================
          * DISPLAY HELPERS
          * ========================================================= */
@@ -968,7 +975,6 @@
             return rounded.toLocaleString() + '%';
         }
 
-
         /* =========================================================
          * CALCULATION
          * ========================================================= */
@@ -977,7 +983,6 @@
             var health = 0;
             var damage = 0;
             var totalRelicValue = 0;
-
 
             /* -----------------------------------------------------
              * NORMAL GEAR
@@ -1035,7 +1040,6 @@
                     formatStat(finalStat);
             });
 
-
             /* -----------------------------------------------------
              * WINGS
              * ----------------------------------------------------- */
@@ -1064,11 +1068,9 @@
                 '<div>Health: ' +
                     formatStat(calculatedWings.health) +
                 '</div>' +
-
                 '<div>Damage: ' +
                     formatStat(calculatedWings.damage) +
                 '</div>';
-
 
             /* -----------------------------------------------------
              * CAPE
@@ -1099,18 +1101,15 @@
                 '<div>Base: ' +
                     formatPercent(calculatedCape.baseBonus) +
                 '</div>' +
-
                 '<div>With relic: ' +
                     formatPercent(calculatedCape.effectiveBonus) +
                 '</div>';
-
 
             /*
              * Cape applies after all other equipment has been added.
              */
             health *= calculatedCape.multiplier;
             damage *= calculatedCape.multiplier;
-
 
             /* -----------------------------------------------------
              * TOTALS
@@ -1132,11 +1131,9 @@
                 totalRelicValue.toLocaleString();
         }
 
-
         /* =========================================================
          * EVENTS
          * ========================================================= */
-
 
         var unassignedRelicValue = 0;
         var highlightTimer;
@@ -1251,73 +1248,27 @@
         root.addEventListener('input', handleInput);
         root.addEventListener('change', handleInput);
 
-
         syncAllTiers();
         calculate();
     }
 
-
     /* =========================================================
-     * CHARACTER STATS AND DAMAGE CALCULATOR UI
+     * INDEPENDENT STAT AND DAMAGE CALCULATOR UIs
      *
-     * The article needs only <div id="dungeon-rush-calculator"></div>.
-     * All controls and results are built here.
+     * Article roots: stat-calculator and damage-calculator.
+     * dungeon-rush-calculator remains a legacy alias for the stat calculator.
      * ========================================================= */
 
-    function initDungeonRushCalculator() {
-        var root = document.getElementById('dungeon-rush-calculator');
+    function initStatCalculator() {
+        var root = document.getElementById('stat-calculator') || document.getElementById('dungeon-rush-calculator');
         if (!root || root.getAttribute('data-initialized') === 'true') {
             return;
         }
-
         root.classList.add('dr-calculator');
 
-        function element(name) {
-            return root.querySelector('#dr-' + name);
-        }
-
-        function number(name, minimum, integer) {
-            var value = parseFloat(element(name).value);
-            if (!isFinite(value)) {
-                value = minimum === undefined ? 0 : minimum;
-            }
-            if (integer) {
-                value = Math.floor(value);
-            }
-            return minimum === undefined ? value : Math.max(minimum, value);
-        }
-
-        function output(name, value) {
-            element(name).textContent = value;
-        }
-
-        function field(name, label, value, minimum, step) {
-            return '<label for="dr-' + name + '">' + label +
-                '<input class="gear-calc-input" type="number" id="dr-' + name + '"' +
-                ' value="' + value + '" step="' + (step || '0.01') + '"' +
-                (minimum === undefined ? '' : ' min="' + minimum + '"') + '></label>';
-        }
-
-        function weaponField(name) {
-            return '<label for="dr-' + name + '">Weapon type' +
-                '<select id="dr-' + name + '">' +
-                weaponTypes.map(function (type) {
-                    var key = type.name.toLowerCase();
-                    return '<option value="' + key + '"' + (key === 'ranged' ? ' selected' : '') +
-                        '>' + type.name + '</option>';
-                }).join('') + '</select></label>';
-        }
-
-        function detail(label, name) {
-            return '<div>' + label + ': <span id="dr-' + name + '">0</span></div>';
-        }
-
-        function card(label, name, details, compact) {
-            return '<div class="gear-calc-result"><span>' + label + '</span>' +
-                '<strong id="dr-' + name + '">0</strong>' +
-                (compact ? '<small id="dr-' + name + '-compact"></small>' : '') +
-                '<div class="gear-calc-breakdown">' + details + '</div></div>';
-        }
+        var ui = calculatorUI(root);
+        var element = ui.element, number = ui.number, output = ui.output;
+        var field = ui.field, weaponField = ui.weaponField, detail = ui.detail, card = ui.card;
 
         function equipmentRow(id, label, options, minimum, maximum) {
             var prefix = 'dr-stat-' + id;
@@ -1345,6 +1296,190 @@
             ['melee', 'Melee (%)'], ['crit', 'Critical damage (%)']
         ];
 
+        var lastPetLevels = pets.map(function (pet) { return pet.level; });
+        var petTiles = pets.map(function (pet, index) {
+            return '<div class="gear-calc-pet" id="dr-pet-tile-' + index + '" role="group"' +
+                    ' aria-labelledby="dr-pet-name-' + index + '">' +
+                '<input class="gear-calc-pet-active" type="checkbox" id="dr-pet-' + index + '" checked' +
+                    ' data-pet-toggle="' + index + '" aria-label="Include ' + pet.name + '">' +
+                '<label class="gear-calc-pet-portrait" for="dr-pet-' + index + '">' +
+                    '<span class="dr-calc-icon dr-calc-icon-' + pet.icon + '" aria-hidden="true"></span></label>' +
+                '<input type="number" id="dr-pet-level-' + index + '" min="0" step="1" value="' + pet.level + '"' +
+                    ' data-pet-level="' + index + '" aria-label="' + pet.name + ' level"' +
+                    ' aria-describedby="dr-pet-details-' + index + '">' +
+                '<label class="gear-calc-note" id="dr-pet-name-' + index + '" for="dr-pet-level-' + index + '">' + pet.name + '</label>' +
+                '<span id="dr-pet-details-' + index + '" hidden>' + pet.rarity + '. Damage: ' +
+                    '<span id="dr-pet-damage-' + index + '"></span>. Health: ' +
+                    '<span id="dr-pet-health-' + index + '"></span>.</span></div>';
+        }).join('');
+
+        root.innerHTML = '<div class="gear-calc">' +
+                '<section class="gear-calc-section"><h3>Bonuses</h3>' +
+                    '<p>Additional percentage bonuses from talents, runes, guild, and other sources.</p>' +
+                    '<div class="gear-calc-fields">' + weaponField('stat-weapon') +
+                    bonusFields.map(function (definition) {
+                        return field('bonus-' + definition[0], definition[1], 0);
+                    }).join('') + '</div></section>' +
+                '<section class="gear-calc-section"><h3>Gear, wings, and cape</h3>' +
+                    '<p>Enter the tier, level, and enchantment for each slot. Wings provide both stats; ' +
+                        'the cape adds a percentage bonus.</p>' +
+                    '<div class="gear-calc-scroll"><table class="gear-calc-table gear-calc-equipment gear-calc-stat-equipment">' +
+                        '<thead><tr><th scope="col">Item</th><th scope="col">Tier</th>' +
+                            '<th scope="col">Level</th><th scope="col">Enchantment</th>' +
+                            '<th scope="col">Calculated stat</th></tr></thead>' +
+                        '<tbody>' + equipmentRows + '</tbody></table></div></section>' +
+                '<section class="gear-calc-section" id="dr-pet-section"><h3>Pets</h3>' +
+                    '<p class="gear-calc-note">Set pet levels below. Level 0 switches a pet off; uncheck to temporarily exclude it.</p>' +
+                    '<div class="gear-calc-actions">' +
+                        '<button type="button" id="dr-pets-all">Select all</button>' +
+                        '<button type="button" id="dr-pets-none">Deselect all</button></div>' +
+                    '<div class="gear-calc-pets">' + petTiles + '</div>' +
+                    '<div class="gear-calc-pet-totals" aria-label="Selected pet totals">' +
+                        '<span>Selected pets — Damage: <strong id="dr-pets-damage"></strong></span>' +
+                        '<span>Health: <strong id="dr-pets-health"></strong></span></div></section>' +
+                '<section class="gear-calc-section"><h3>Totals</h3>' +
+                    '<div class="gear-calc-results">' +
+                    card('Total Damage', 'total-damage',
+                        detail('Gear', 'gear-damage') + detail('Pets', 'pet-damage') +
+                        detail('Multiplier', 'damage-multiplier'), true) +
+                    card('Total Health', 'total-health',
+                        detail('Gear', 'gear-health') + detail('Pets', 'pet-health') +
+                        detail('Multiplier', 'health-multiplier'), true) +
+                    card('Damage on critical hit', 'total-critical',
+                        'Base: 105% + critical damage bonus', true) +
+                    '</div></section>' +
+            '</div>';
+
+        var lastTotals;
+
+        function readEquipment(id) {
+            return {
+                tier: number('stat-' + id + '-tier', 0, true),
+                level: number('stat-' + id + '-level', 1, true),
+                relicLevel: number('stat-' + id + '-enchantment', 0, true)
+            };
+        }
+
+        function breakdown(label, base, bonus, total, percent, extra) {
+            var suffix = percent ? '%' : '';
+            return '<div>Base ' + label.toLowerCase() + ': ' + formatNumber(base) + suffix +
+                ' + ' + formatNumber(bonus) + suffix + '</div>' +
+                '<div><b>Total: ' + formatNumber(total) + suffix + '</b></div>' +
+                (extra ? '<div>(' + extra + ')</div>' : '');
+        }
+
+        function calculateStats() {
+            var loadout = { weaponType: element('stat-weapon').value, gear: {}, bonuses: {}, petsActive: [], petLevels: [] };
+            gear.forEach(function (item) {
+                loadout.gear[item.id] = readEquipment(item.id);
+            });
+            loadout.gear.wings = readEquipment('wings');
+            loadout.cape = {
+                rarity: element('stat-cape-tier').value,
+                level: number('stat-cape-level', 1, true),
+                relicLevel: number('stat-cape-enchantment', 0, true)
+            };
+            bonusFields.forEach(function (definition) {
+                loadout.bonuses[definition[0]] = number('bonus-' + definition[0]);
+            });
+            pets.forEach(function (pet, index) {
+                var level = number('pet-level-' + index, 0, true);
+                var checkbox = element('pet-' + index);
+                if (level === 0) {
+                    checkbox.checked = false;
+                }
+                loadout.petsActive[index] = checkbox.checked;
+                loadout.petLevels[index] = level;
+                element('pet-tile-' + index).classList.toggle('is-inactive', !checkbox.checked);
+            });
+
+            lastTotals = characterStats(loadout);
+            gear.forEach(function (item) {
+                var stats = lastTotals.gear[item.id];
+                element('stat-' + item.id + '-result').innerHTML = breakdown(
+                    item.stat === 'health' ? 'Health' : 'Damage', stats.base, stats.bonus, stats.total);
+            });
+            var wingStats = lastTotals.wings;
+            element('stat-wings-result').innerHTML =
+                breakdown('Health', wingStats.base.health, wingStats.bonus.health, wingStats.total.health) +
+                breakdown('Damage', wingStats.base.damage, wingStats.bonus.damage, wingStats.total.damage);
+            // Show the cape's contribution from equipped gear and wings, before other bonuses.
+            var capeRate = lastTotals.cape.effectiveBonus / 100;
+            element('stat-cape-result').innerHTML = breakdown('Bonus',
+                lastTotals.cape.baseBonus, lastTotals.cape.bonus, lastTotals.cape.effectiveBonus, true,
+                '+' + formatNumber(lastTotals.gearHealth * capeRate) + ' health, +' +
+                formatNumber(lastTotals.gearDamage * capeRate) + ' damage');
+
+            lastTotals.pets.forEach(function (stats, index) {
+                output('pet-damage-' + index, formatNumber(stats.damage, stats.damage % 1 ? 2 : 0));
+                output('pet-health-' + index, formatNumber(stats.health, stats.health % 1 ? 2 : 0));
+                element('pet-tile-' + index).title = pets[index].name + ' (' + pets[index].rarity + ')\n' +
+                    element('pet-details-' + index).textContent + (loadout.petsActive[index] ? '' : '\nInactive');
+            });
+            output('pets-damage', formatNumber(lastTotals.petDamage, lastTotals.petDamage % 1 ? 2 : 0));
+            output('pets-health', formatNumber(lastTotals.petHealth, lastTotals.petHealth % 1 ? 2 : 0));
+            ['damage', 'health'].forEach(function (stat) {
+                var title = stat === 'damage' ? 'Damage' : 'Health';
+                output('total-' + stat, formatNumber(lastTotals[stat], 0));
+                output('total-' + stat + '-compact', formatCompact(lastTotals[stat]));
+                output('gear-' + stat, formatNumber(lastTotals['gear' + title], 0));
+                output('pet-' + stat, formatNumber(lastTotals['pet' + title], 0));
+                output(stat + '-multiplier', '\u00d7' + formatNumber(lastTotals[stat + 'Multiplier']));
+            });
+            element('total-damage').setAttribute('data-damage', lastTotals.damage);
+            output('total-critical', formatNumber(lastTotals.criticalDamage, 0));
+            output('total-critical-compact', formatCompact(lastTotals.criticalDamage));
+        }
+
+        function setPetActive(index, active) {
+            if (active && number('pet-level-' + index, 0, true) === 0) {
+                element('pet-level-' + index).value = lastPetLevels[index] || 1;
+            }
+            element('pet-' + index).checked = active;
+        }
+
+        function handleStatsInput(event) {
+            var target = event.target;
+            if (target.hasAttribute('data-pet-level')) {
+                var index = Number(target.getAttribute('data-pet-level'));
+                var level = number('pet-level-' + index, 0, true);
+                element('pet-' + index).checked = level > 0;
+                if (level > 0) {
+                    lastPetLevels[index] = level;
+                }
+            } else if (target.hasAttribute('data-pet-toggle')) {
+                setPetActive(Number(target.getAttribute('data-pet-toggle')), target.checked);
+            }
+            calculateStats();
+        }
+
+        ['input', 'change'].forEach(function (event) {
+            root.addEventListener(event, handleStatsInput);
+        });
+
+        function selectPets(active) {
+            pets.forEach(function (pet, index) {
+                setPetActive(index, active);
+            });
+            calculateStats();
+        }
+        element('pets-all').addEventListener('click', function () { selectPets(true); });
+        element('pets-none').addEventListener('click', function () { selectPets(false); });
+        calculateStats();
+        root.setAttribute('data-initialized', 'true');
+    }
+
+    function initDamageCalculator() {
+        var root = document.getElementById('damage-calculator');
+        if (!root || root.getAttribute('data-initialized') === 'true') {
+            return;
+        }
+        root.classList.add('dr-calculator');
+
+        var ui = calculatorUI(root);
+        var element = ui.element, number = ui.number, output = ui.output;
+        var field = ui.field, weaponField = ui.weaponField, detail = ui.detail, card = ui.card;
+
         var attackerFields = [
             ['baseDamage', 'Base damage (before crit and defense)', 1000, 1],
             ['criticalChance', 'Critical chance (%)', 0],
@@ -1370,70 +1505,11 @@
             }).join('');
         }
 
-        var petRows = pets.map(function (pet, index) {
-            return '<tr><td><input type="checkbox" id="dr-pet-' + index + '" checked' +
-                ' aria-label="Include ' + pet.name + '"></td><th scope="row">' +
-                '<label for="dr-pet-' + index + '">' + pet.name + '</label>' +
-                '<small class="gear-calc-note">' + pet.animal + '</small></th>' +
-                '<td>' + pet.rarity + '</td><td>' +
-                    '<input type="number" id="dr-pet-level-' + index + '" min="1" step="1" value="' + pet.level + '"' +
-                        ' aria-label="' + pet.name + ' level"></td>' +
-                '<td id="dr-pet-damage-' + index + '"></td>' +
-                '<td id="dr-pet-health-' + index + '"></td></tr>';
-        }).join('');
-
         root.innerHTML = '<div class="gear-calc">' +
-            '<div class="gear-calc-actions" role="tablist" aria-label="Dungeon Rush calculators">' +
-                '<button type="button" role="tab" id="dr-tab-stats" aria-controls="dr-panel-stats"' +
-                    ' aria-selected="true">Stat Calculator</button>' +
-                '<button type="button" role="tab" id="dr-tab-damage" aria-controls="dr-panel-damage"' +
-                    ' aria-selected="false" tabindex="-1">Damage Calculator</button>' +
-            '</div>' +
-            '<div id="dr-panel-stats" role="tabpanel" aria-labelledby="dr-tab-stats">' +
-                '<section class="gear-calc-section"><h3>Bonuses</h3>' +
-                    '<p>Additional percentage bonuses from talents, runes, guild, and other sources.</p>' +
-                    '<div class="gear-calc-fields">' + weaponField('stat-weapon') +
-                    bonusFields.map(function (definition) {
-                        return field('bonus-' + definition[0], definition[1], 0);
-                    }).join('') + '</div></section>' +
-                '<section class="gear-calc-section"><h3>Gear, wings, and cape</h3>' +
-                    '<p>Enter the tier, level, and enchantment for each slot. Wings provide both stats; ' +
-                        'the cape adds a percentage bonus.</p>' +
-                    '<div class="gear-calc-scroll"><table class="gear-calc-table gear-calc-equipment">' +
-                        '<thead><tr><th scope="col">Item</th><th scope="col">Tier</th>' +
-                            '<th scope="col">Level</th><th scope="col">Enchantment</th>' +
-                            '<th scope="col">Calculated stat</th></tr></thead>' +
-                        '<tbody>' + equipmentRows + '</tbody></table></div></section>' +
-                '<section class="gear-calc-section"><h3>Pets</h3>' +
-                    '<p>Set each pet\'s level and select the pets to include; all are selected by default.</p>' +
-                    '<div class="gear-calc-actions">' +
-                        '<button type="button" id="dr-pets-all">Select all</button>' +
-                        '<button type="button" id="dr-pets-none">Deselect all</button></div>' +
-                    '<div class="gear-calc-scroll"><table class="gear-calc-table gear-calc-pets">' +
-                        '<thead><tr><th scope="col">Include</th><th scope="col">Pet</th>' +
-                            '<th scope="col">Rarity</th><th scope="col">Level</th>' +
-                            '<th scope="col">Damage</th><th scope="col">Health</th></tr></thead>' +
-                        '<tbody>' + petRows + '</tbody><tfoot><tr>' +
-                            '<th scope="row" colspan="4">Sum of selected pets</th>' +
-                            '<td id="dr-pets-damage"></td><td id="dr-pets-health"></td>' +
-                        '</tr></tfoot></table></div></section>' +
-                '<section class="gear-calc-section"><h3>Totals</h3>' +
-                    '<div class="gear-calc-results">' +
-                    card('Total Damage', 'total-damage',
-                        detail('Gear', 'gear-damage') + detail('Pets', 'pet-damage') +
-                        detail('Multiplier', 'damage-multiplier'), true) +
-                    card('Total Health', 'total-health',
-                        detail('Gear', 'gear-health') + detail('Pets', 'pet-health') +
-                        detail('Multiplier', 'health-multiplier'), true) +
-                    card('Damage on critical hit', 'total-critical',
-                        'Base: 105% + critical damage bonus', true) +
-                    '</div></section>' +
-            '</div>' +
-            '<div id="dr-panel-damage" role="tabpanel" aria-labelledby="dr-tab-damage" hidden>' +
                 '<section class="gear-calc-section"><h3>Attacker</h3>' +
                     '<div class="gear-calc-fields">' + weaponField('damage-weapon') +
                         damageFields(attackerFields) + '</div>' +
-                    '<div class="gear-calc-actions"><button type="button" id="dr-use-stat-damage">' +
+                    '<div class="gear-calc-actions" id="dr-stat-damage-transfer" hidden><button type="button" id="dr-use-stat-damage">' +
                         'Use Total Damage from Stat Calculator</button></div></section>' +
                 '<section class="gear-calc-section"><h3>Target</h3>' +
                     '<p>The attacker\'s weapon type selects the defense used. Leave Current HP blank to ignore overkill.</p>' +
@@ -1466,74 +1542,7 @@
                         'Block reduces expected damage per attack. Knockback is shown separately and requires a surviving target. ' +
                         'Lifesteal includes overkill; thorns does not trigger on a killing blow. ' +
                         'The applied-damage estimate uses the expected damage per hit.</p></section>' +
-            '</div></div>';
-
-        var lastTotals;
-
-        function readEquipment(id) {
-            return {
-                tier: number('stat-' + id + '-tier', 0, true),
-                level: number('stat-' + id + '-level', 1, true),
-                relicLevel: number('stat-' + id + '-enchantment', 0, true)
-            };
-        }
-
-        function breakdown(label, base, bonus, total, percent) {
-            var suffix = percent ? '%' : '';
-            return '<div>' + label + '</div><div>Base: ' + formatNumber(base) + suffix +
-                '</div><div>Enchantment: ' + formatNumber(bonus) + suffix +
-                '</div><div><b>Total: ' + formatNumber(total) + suffix + '</b></div>';
-        }
-
-        function calculateStats() {
-            var loadout = { weaponType: element('stat-weapon').value, gear: {}, bonuses: {}, petsActive: [], petLevels: [] };
-            gear.forEach(function (item) {
-                loadout.gear[item.id] = readEquipment(item.id);
-            });
-            loadout.gear.wings = readEquipment('wings');
-            loadout.cape = {
-                rarity: element('stat-cape-tier').value,
-                level: number('stat-cape-level', 1, true),
-                relicLevel: number('stat-cape-enchantment', 0, true)
-            };
-            bonusFields.forEach(function (definition) {
-                loadout.bonuses[definition[0]] = number('bonus-' + definition[0]);
-            });
-            pets.forEach(function (pet, index) {
-                loadout.petsActive[index] = element('pet-' + index).checked;
-                loadout.petLevels[index] = number('pet-level-' + index, 1, true);
-            });
-
-            lastTotals = characterStats(loadout);
-            gear.forEach(function (item) {
-                var stats = lastTotals.gear[item.id];
-                element('stat-' + item.id + '-result').innerHTML = breakdown(
-                    item.stat === 'health' ? 'Health' : 'Damage', stats.base, stats.bonus, stats.total);
-            });
-            var wingStats = lastTotals.wings;
-            element('stat-wings-result').innerHTML =
-                breakdown('Health', wingStats.base.health, wingStats.bonus.health, wingStats.total.health) +
-                breakdown('Damage', wingStats.base.damage, wingStats.bonus.damage, wingStats.total.damage);
-            element('stat-cape-result').innerHTML = breakdown('Bonus',
-                lastTotals.cape.baseBonus, lastTotals.cape.bonus, lastTotals.cape.effectiveBonus, true);
-
-            lastTotals.pets.forEach(function (stats, index) {
-                output('pet-damage-' + index, formatNumber(stats.damage, stats.damage % 1 ? 2 : 0));
-                output('pet-health-' + index, formatNumber(stats.health, stats.health % 1 ? 2 : 0));
-            });
-            output('pets-damage', formatNumber(lastTotals.petDamage, lastTotals.petDamage % 1 ? 2 : 0));
-            output('pets-health', formatNumber(lastTotals.petHealth, lastTotals.petHealth % 1 ? 2 : 0));
-            ['damage', 'health'].forEach(function (stat) {
-                var title = stat === 'damage' ? 'Damage' : 'Health';
-                output('total-' + stat, formatNumber(lastTotals[stat], 0));
-                output('total-' + stat + '-compact', formatCompact(lastTotals[stat]));
-                output('gear-' + stat, formatNumber(lastTotals['gear' + title], 0));
-                output('pet-' + stat, formatNumber(lastTotals['pet' + title], 0));
-                output(stat + '-multiplier', '\u00d7' + formatNumber(lastTotals[stat + 'Multiplier']));
-            });
-            output('total-critical', formatNumber(lastTotals.criticalDamage, 0));
-            output('total-critical-compact', formatCompact(lastTotals.criticalDamage));
-        }
+            '</div>';
 
         function calculateDamage() {
             var input = { weaponType: element('damage-weapon').value };
@@ -1572,52 +1581,23 @@
         }
 
         ['input', 'change'].forEach(function (event) {
-            element('panel-stats').addEventListener(event, calculateStats);
-            element('panel-damage').addEventListener(event, calculateDamage);
+            root.addEventListener(event, calculateDamage);
         });
 
-        function selectPets(active) {
-            pets.forEach(function (pet, index) {
-                element('pet-' + index).checked = active;
-            });
-            calculateStats();
-        }
-        element('pets-all').addEventListener('click', function () { selectPets(true); });
-        element('pets-none').addEventListener('click', function () { selectPets(false); });
+        // The copy action is available only when a stat calculator is also present.
+        element('stat-damage-transfer').hidden = !document.getElementById('dr-total-damage');
         element('use-stat-damage').addEventListener('click', function () {
-            element('damage-baseDamage').value = Math.round(lastTotals.damage * 100) / 100;
-            calculateDamage();
+            var source = document.getElementById('dr-total-damage');
+            if (!source) {
+                return;
+            }
+            var damage = Number(source.getAttribute('data-damage'));
+            if (isFinite(damage)) {
+                element('damage-baseDamage').value = Math.round(damage * 100) / 100;
+                calculateDamage();
+            }
         });
 
-        var tabs = ['stats', 'damage'];
-        function showTab(active) {
-            tabs.forEach(function (name) {
-                var selected = name === active;
-                element('tab-' + name).setAttribute('aria-selected', selected ? 'true' : 'false');
-                element('tab-' + name).tabIndex = selected ? 0 : -1;
-                element('panel-' + name).hidden = !selected;
-            });
-        }
-        tabs.forEach(function (name, index) {
-            element('tab-' + name).addEventListener('click', function () { showTab(name); });
-            element('tab-' + name).addEventListener('keydown', function (event) {
-                var next;
-                if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-                    next = tabs[1 - index];
-                } else if (event.key === 'Home') {
-                    next = tabs[0];
-                } else if (event.key === 'End') {
-                    next = tabs[1];
-                }
-                if (next) {
-                    event.preventDefault();
-                    showTab(next);
-                    element('tab-' + next).focus();
-                }
-            });
-        });
-
-        calculateStats();
         calculateDamage();
         root.setAttribute('data-initialized', 'true');
     }
@@ -1656,7 +1636,8 @@
 
     function initCalculators() {
         initRelicCalculator();
-        initDungeonRushCalculator();
+        initStatCalculator();
+        initDamageCalculator();
         initDefenseCalculator();
     }
 
